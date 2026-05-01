@@ -14,6 +14,8 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
   commits.
 - `AGENTS.template.md`: starter agent instructions to copy into a target repo.
 - `docs/gest_codex_workflow.md`: the full workflow playbook.
+- `docs/g_commands_cheatsheet.md`: quick user-facing guide to `/gtw` and the
+  other g-command skills.
 - `tools/gest_mermaid_graph.py`: optional read-only Gest SQLite exporter that
   writes clickable Mermaid/HTML relationship graphs.
 - `scripts/install.sh`: simple copy-based installer for target repos.
