@@ -186,6 +186,22 @@ Development-mode work should have stronger commit checkpoints:
 - after resolving a risky bug or migration where rollback clarity matters
 - before pushing or syncing to a GitHub issue/PR
 
+In development mode, do not merely ask the user whether each slice should be
+committed. After completing and verifying a coherent depth-2 implementation
+leaf or tightly related set of leaves, make the commit judgment yourself. If the
+slice changes schema, persistence, query semantics, migrations, public APIs,
+user-visible UI, or non-trivial verification, prefer committing it before
+claiming the next implementation slice. Small design-only, exploratory, or
+strictly dependent leaves may stay uncommitted until they combine into the next
+coherent checkpoint.
+
+When committing a slice, derive the commit body from the completed Gest task
+notes: summarize `Done`, include `Verification`, mention real `Follow-up`
+items, and cite changed subsystems or files when that helps future bisecting.
+The commit message must not include Gest IDs. A future `git bisect` should land
+on a narrow layer such as schema/indexing, repository/query behavior, UI, or
+verification rather than a whole multi-layer feature.
+
 When a commit is appropriate, inspect status/diff, stage explicit files, and use
 `gcm`. Never use `git add .` by default. Never put Gest IDs in commit messages.
 Use GitHub issue footers only when the relevant Gest metadata contains a real

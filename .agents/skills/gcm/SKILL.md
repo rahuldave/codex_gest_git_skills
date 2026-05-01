@@ -20,6 +20,17 @@ verified depth-1 workstream or coherent depth-2 implementation subtree, before
 switching product areas, before handoff, after risky bug/migration work, or
 before GitHub issue/PR sync.
 
+In development mode, do not default to asking the user whether a verified slice
+should be committed. Make the judgment yourself after each coherent depth-2
+implementation leaf or tightly related set of leaves. Prefer committing before
+continuing when the slice changes schema, persistence, query semantics, public
+APIs, user-visible UI, or non-trivial verification. Keep the unit small enough
+that `git bisect` would land on a useful layer.
+
+Use completed Gest task notes to draft copious but focused commit bodies:
+include what changed from `Done`, the exact checks from `Verification`, and any
+real `Follow-up`. Never include Gest IDs.
+
 ## Workflow
 
 Inspect:
@@ -45,5 +56,8 @@ Never reference Gest IDs in commit messages. If the relevant Gest task metadata
 contains `github.issue`, include a GitHub footer such as `Closes #42` only when
 that is semantically correct.
 
-Ask the user for confirmation before committing unless they have just explicitly
-approved the commit. Stage explicit files rather than using `git add .`.
+Ask the user for confirmation before committing only when the commit checkpoint
+is ambiguous, risky, or outside the workflow's durable-checkpoint rules. If the
+user has asked you to manage commits or the workflow clearly says the verified
+development slice should be committed, proceed. Stage explicit files rather
+than using `git add .`.

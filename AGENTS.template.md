@@ -55,6 +55,15 @@ risky bug/migration fix, or GitHub issue/PR sync.
 
 Stage explicit files and do not put Gest IDs in commit messages.
 
+For development-mode implementation, agents should make the commit judgment
+themselves after each verified coherent depth-2 slice instead of only asking the
+user at the end. Prefer a commit before moving to the next slice when the work
+changes schema, persistence, query semantics, public APIs, user-visible UI, or
+non-trivial verification. Use the completed Gest notes to write detailed commit
+bodies with what changed, verification run, and real follow-ups. Keep commits
+narrow enough that a future `git bisect` lands on a useful layer, not an entire
+multi-layer feature. Never include Gest IDs in commit messages.
+
 ## Verification
 
 Replace with project commands, for example:

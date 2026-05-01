@@ -142,6 +142,15 @@ depth-1 workstream or coherent depth-2 subtree, before switching product areas,
 before handoff, after risky bug/migration work, or before GitHub issue/PR sync.
 Use `gcm`, stage explicit files, and never put Gest IDs in commit messages.
 
+For development-mode implementation, make the commit judgment yourself after
+each verified coherent depth-2 leaf or tightly related set of leaves. Prefer a
+commit before claiming the next implementation slice when the completed work
+changes schema, persistence, query semantics, public APIs, user-visible UI, or
+non-trivial verification. Use the completed Gest notes to write detailed commit
+bodies: `Done`, `Verification`, and real `Follow-up` details should become the
+source material. The goal is useful bisect granularity, not one giant feature
+commit.
+
 ## Template Sync
 
 When changing reusable workflow material, copy the reusable parts to
