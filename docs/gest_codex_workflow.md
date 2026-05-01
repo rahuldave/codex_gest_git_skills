@@ -207,6 +207,15 @@ When a commit is appropriate, inspect status/diff, stage explicit files, and use
 Use GitHub issue footers only when the relevant Gest metadata contains a real
 GitHub issue and the commit semantically closes or references it.
 
+Every Codex-created commit needs a separate push/sync decision. Do not treat
+GitHub issue promotion as a substitute for `git push`. Before and after the
+commit, inspect `git status --short --branch`; if the branch has an upstream
+and the user has not asked for local-only work, push the verified checkpoint or
+record the exact no-push reason in the task note/final summary. If the branch
+is still `ahead` at handoff, the checkpoint is incomplete unless that no-push
+reason is explicit. For reusable workflow/template repo changes, push is
+required unless blocked.
+
 ## Checkpoint Hygiene
 
 At every durable checkpoint, run the project hygiene that keeps later agents
@@ -227,11 +236,16 @@ Checkpoint steps:
    use `gpr` or create/update the GitHub issue and write `github.issue` /
    `github.url` metadata back to Gest. If you intentionally skip GitHub
    promotion, record why in the task note or final summary.
-3. For substantial code changes, run an explicit review pass before or at the
+3. For every Codex-created commit, verify push state with
+   `git status --short --branch`. If an upstream exists and the branch is
+   ahead, push it or record the explicit local-only/blocker reason. Report the
+   final branch relationship separately from the GitHub issue decision.
+4. For substantial code changes, run an explicit review pass before or at the
    checkpoint. Use `grv` or a code-review stance over the current diff/commit,
    then fix or record any findings before closing the parent or iteration.
-4. Verify the final Gest status after closing the parent or iteration and report
-   the graph paths, commit hashes, review status, and GitHub issue decision.
+5. Verify the final Gest status after closing the parent or iteration and report
+   the graph paths, commit hashes, push status, review status, and GitHub issue
+   decision.
 
 ## Template Sync
 

@@ -64,6 +64,13 @@ bodies with what changed, verification run, and real follow-ups. Keep commits
 narrow enough that a future `git bisect` lands on a useful layer, not an entire
 multi-layer feature. Never include Gest IDs in commit messages.
 
+After every Codex-created commit, make the push/sync decision explicit. Run
+`git status --short --branch`; if the branch has an upstream and the user has
+not asked for local-only work, push the checkpoint or record the exact reason it
+was not pushed. Do not confuse GitHub issue promotion with `git push`. A
+checkpoint is not complete if the branch is silently `ahead` of its upstream.
+For reusable workflow/template repo changes, push is mandatory unless blocked.
+
 At every durable checkpoint, run checkpoint hygiene. Durable checkpoints include
 any Codex-created Git commit, closing a depth-1 task/product parent, completing
 an iteration, or handing off after substantial implementation. Regenerate the
@@ -73,7 +80,8 @@ with `gest` commands. For user-visible, architecture-relevant, multi-session, or
 release-worthy work, decide whether to promote/sync a GitHub issue with `gpr`;
 if not, record why. For substantial code changes, run an explicit review pass
 with `grv` or code-review stance before closing the parent/iteration. Report
-graph paths, commit hashes, review status, and the GitHub issue decision.
+graph paths, commit hashes, push status, review status, and the GitHub issue
+decision.
 
 ## Verification
 

@@ -141,6 +141,10 @@ Development work should be committed at verified durable checkpoints: after a
 depth-1 workstream or coherent depth-2 subtree, before switching product areas,
 before handoff, after risky bug/migration work, or before GitHub issue/PR sync.
 Use `gcm`, stage explicit files, and never put Gest IDs in commit messages.
+When Codex creates a commit, make a separate push/sync decision: verify
+`git status --short --branch`, push if an upstream exists and local-only work
+was not requested, or record the exact no-push reason. GitHub issue promotion
+and `git push` are different decisions.
 
 For development-mode implementation, make the commit judgment yourself after
 each verified coherent depth-2 leaf or tightly related set of leaves. Prefer a
@@ -162,9 +166,12 @@ At every durable checkpoint, run the cleanup that future agents need:
 - decide whether GitHub promotion/sync is appropriate for user-visible,
   architecture-relevant, multi-session, or release-worthy work; if not, record
   why
+- verify push state for each Codex-created commit; do not finish a checkpoint
+  with an unmentioned `ahead` branch
 - run an explicit review pass for substantial code changes before closing a
   depth-1 parent or iteration
-- report graph paths, commit hashes, review status, and GitHub issue decision
+- report graph paths, commit hashes, push status, review status, and GitHub
+  issue decision
 
 ## Template Sync
 
