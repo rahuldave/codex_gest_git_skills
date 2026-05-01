@@ -31,6 +31,12 @@ Use completed Gest task notes to draft copious but focused commit bodies:
 include what changed from `Done`, the exact checks from `Verification`, and any
 real `Follow-up`. Never include Gest IDs.
 
+After creating a commit, run checkpoint hygiene: regenerate the overall Gest
+graph and a focused graph for the latest relevant iteration, serialized away
+from `gest` commands. For substantial code commits, ensure an explicit review
+pass has happened or run one immediately. Report graph paths, the commit hash,
+review status, and whether GitHub issue promotion/sync is appropriate.
+
 ## Workflow
 
 Inspect:

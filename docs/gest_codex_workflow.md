@@ -207,6 +207,32 @@ When a commit is appropriate, inspect status/diff, stage explicit files, and use
 Use GitHub issue footers only when the relevant Gest metadata contains a real
 GitHub issue and the commit semantically closes or references it.
 
+## Checkpoint Hygiene
+
+At every durable checkpoint, run the project hygiene that keeps later agents
+oriented. Durable checkpoints include:
+
+- any Git commit created by Codex
+- closing a depth-1 task or product/workstream parent
+- completing an iteration
+- handoff after a substantial implementation session
+
+Checkpoint steps:
+
+1. Regenerate the overall Gest graph and a focused graph for the latest relevant
+   iteration. Treat graph generation as a Gest database operation: do not run it
+   in parallel with any `gest` command.
+2. For user-visible, architecture-relevant, multi-session, or release-worthy
+   work, decide whether GitHub promotion is appropriate. If it is appropriate,
+   use `gpr` or create/update the GitHub issue and write `github.issue` /
+   `github.url` metadata back to Gest. If you intentionally skip GitHub
+   promotion, record why in the task note or final summary.
+3. For substantial code changes, run an explicit review pass before or at the
+   checkpoint. Use `grv` or a code-review stance over the current diff/commit,
+   then fix or record any findings before closing the parent or iteration.
+4. Verify the final Gest status after closing the parent or iteration and report
+   the graph paths, commit hashes, review status, and GitHub issue decision.
+
 ## Template Sync
 
 Reusable workflow changes should not live only in one project workspace. When

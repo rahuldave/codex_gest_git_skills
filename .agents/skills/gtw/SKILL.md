@@ -151,6 +151,21 @@ bodies: `Done`, `Verification`, and real `Follow-up` details should become the
 source material. The goal is useful bisect granularity, not one giant feature
 commit.
 
+## Checkpoint Hygiene
+
+At every durable checkpoint, run the cleanup that future agents need:
+
+- regenerate the overall Gest graph and a focused graph for the latest relevant
+  iteration
+- treat graph generation as a Gest database operation and do not run it in
+  parallel with `gest`
+- decide whether GitHub promotion/sync is appropriate for user-visible,
+  architecture-relevant, multi-session, or release-worthy work; if not, record
+  why
+- run an explicit review pass for substantial code changes before closing a
+  depth-1 parent or iteration
+- report graph paths, commit hashes, review status, and GitHub issue decision
+
 ## Template Sync
 
 When changing reusable workflow material, copy the reusable parts to
