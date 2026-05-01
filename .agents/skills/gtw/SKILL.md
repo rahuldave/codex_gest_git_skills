@@ -142,6 +142,14 @@ depth-1 workstream or coherent depth-2 subtree, before switching product areas,
 before handoff, after risky bug/migration work, or before GitHub issue/PR sync.
 Use `gcm`, stage explicit files, and never put Gest IDs in commit messages.
 
+## Template Sync
+
+When changing reusable workflow material, copy the reusable parts to
+the version-controlled workflow template repository, then check, commit, and
+push that repo. This applies to `g*` skills, AGENTS workflow guidance, the
+Gest/Codex playbook, and reusable tools. Keep project-specific details out of
+the template.
+
 ## Completion
 
 Verify before completing tasks. Complete the leaf task only after verification.

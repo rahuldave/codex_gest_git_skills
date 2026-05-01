@@ -191,6 +191,17 @@ When a commit is appropriate, inspect status/diff, stage explicit files, and use
 Use GitHub issue footers only when the relevant Gest metadata contains a real
 GitHub issue and the commit semantically closes or references it.
 
+## Template Sync
+
+Reusable workflow changes should not live only in one project workspace. When
+changing the `g*` skills, `AGENTS.md` workflow guidance, Gest/Codex playbook, or
+reusable tools such as `gest_mermaid_graph.py`, copy the reusable parts into the
+version-controlled workflow template repository.
+
+Then check, commit, and push that repository. The public template repo is the
+version-controlled source for workflow material that should be mixed into other
+projects. Keep project-specific details out of the template repo.
+
 ## Iterations And Phases
 
 Iterations are execution plans. Phases are parallelism boundaries.
@@ -314,7 +325,7 @@ Questions to answer after using the workflow:
 
 - Which reminders do agents actually forget?
 - Which checks are better as hooks versus `gtw` instructions?
-- Should hooks live in this parent workspace, global Codex config, or both?
+- Should hooks live in project-local config, global Codex config, or both?
 - Should hooks only inject context, or should any of them block commands?
 - Do parallel worktrees need hook support for per-worktree context?
 
