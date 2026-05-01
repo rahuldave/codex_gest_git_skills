@@ -1,0 +1,448 @@
+# Gest-Codex Workflow
+
+Last updated: 2026-05-01.
+
+This document defines how Codex should use Gest, GitHub, and the local skill
+family while working in a project repository. The goal is to preserve creative
+flow without losing a durable task tree.
+
+## Core Model
+
+Every substantial request becomes Gest-tracked work. The tracker records both
+durable product structure and the concrete work done in a session.
+
+There are four distinct concepts:
+
+- **GitHub issue**: external, human-visible durable intent.
+- **Development iteration**: a Gest execution plan for larger scoped work,
+  usually attached to a GitHub issue and possibly spanning many sessions.
+- **Session iteration**: a Gest execution plan for the current chat/session,
+  including exploratory or tactical tasks.
+- **Outline task**: a durable Gest task in the internal task tree. User requests
+  should be parented under the best existing outline task, or a new outline task
+  should be created when needed.
+
+The mode of an iteration does not determine whether work can run in parallel.
+Parallelism depends on task independence, file overlap, and risk.
+
+## Task Hierarchy
+
+Gest parent tasks are represented with native `child-of` / `parent-of` links.
+Tags help filtering, but links are the source of truth for hierarchy.
+
+Preferred depth:
+
+```text
+depth 0: product area / GitHub-scale initiative
+depth 1: coherent feature, subsystem, or workstream
+depth 2: concrete implementable task
+depth 3: tiny tactical subtask, only when useful
+```
+
+Every concrete implementation task should have a parent unless it is truly
+standalone. Long-lived outline parents may remain open across multiple sessions.
+Do not complete a parent just because one session leaf is done.
+
+## Classification
+
+Before editing files, Codex decides which class fits the request:
+
+- **Session leaf only**: tiny, tactical, unlikely to matter after the session.
+- **Session leaf under existing outline**: small work that clearly belongs under
+  a durable product/workflow area.
+- **New outline task plus session leaves**: new durable area, but not yet worth a
+  GitHub issue or formal spec.
+- **Development iteration**: larger scoped effort with acceptance criteria,
+  phases, possible parallel work, likely GitHub visibility, or multi-session
+  continuation.
+
+Promote session-shaped work to development when it needs a spec/design decision,
+spans multiple sessions, should be visible on GitHub, has multiple durable
+acceptance criteria, creates a reusable product area, or requires staged
+delivery.
+
+## Specs
+
+Create a Gest spec artifact when the request needs product/design shaping before
+implementation. A spec is appropriate when:
+
+- the desired behavior is not yet clear
+- there are several approaches with trade-offs
+- acceptance criteria need to be negotiated
+- the work affects multiple systems or future workflows
+- GitHub-visible development is likely
+
+When a spec is created, implementation should happen in follow-on Gest tasks.
+Do not bury implementation work inside the spec artifact itself.
+
+## GitHub Promotion
+
+GitHub issues are for durable external visibility, not for every leaf task.
+Promote work to GitHub when it is user-visible, architecture-relevant,
+multi-session, release-worthy, or worth tracking outside the local Gest ledger.
+
+When a GitHub issue exists, store it as metadata on both the development
+iteration and the top-level outline task when applicable:
+
+```text
+github.issue=<number>
+github.url=<url>
+workflow.kind=development
+outline.root=<gest-task-id>
+```
+
+GitHub is visibility. Gest remains the local execution ledger.
+
+## Tags
+
+Use tags as filters, not as hierarchy.
+
+Core workflow tags:
+
+- `development`
+- `session`
+- `outline`
+- `issue`
+- `subissue`
+- `github`
+- `parent`
+- `leaf`
+
+Area tags:
+
+- `close-reading`
+- `workflow`
+- `ai`
+- `annotations`
+- `ingestion`
+- `export`
+- `search`
+- `ui`
+- `db`
+- `docs`
+- `testing`
+
+Work-type tags:
+
+- `bug`
+- `feature`
+- `research`
+- `design`
+- `implementation`
+- `verification`
+- `cleanup`
+- `regression`
+
+Metadata should hold source-of-truth facts such as `workflow.kind`, `depth`,
+`github.issue`, `github.url`, `outline.root`, and `parent_task`.
+
+## Completion Notes
+
+Task descriptions are intent: what the task was created to accomplish. Do not
+rewrite descriptions at completion just to record what happened.
+
+For non-trivial completed leaf tasks, add a Gest task note before marking the
+task done. Notes are first-class Gest data, appear in `gest task show` and the
+web timeline, and sync under `.gest/task/notes/`.
+
+Use this shape:
+
+```text
+Done: <one or two concrete sentences about what changed>
+Verification: <commands/checks run, or why verification was limited>
+Follow-up: <only if a real residual issue or next step remains>
+```
+
+Command pattern:
+
+```bash
+gest task note add <task-id> --agent codex --body "Done: ...\nVerification: ..."
+gest task complete <task-id> --quiet
+```
+
+Use metadata for machine-queryable facts, for example changed files, GitHub
+issue IDs, or verification command lists. Use notes for prose work logs. For
+tiny mechanical tasks, the status transition and final chat summary may be
+enough.
+
+## Commit Cadence
+
+Committing is VCS hygiene, not a Gest task by itself. Do not create a Gest task
+whose only purpose is "make a commit" unless the Git history work is itself
+substantial, such as splitting a messy changeset or recovering from a bad
+history operation.
+
+Session-mode work should not auto-commit every small leaf. Commit session work
+when the user asks, when a coherent checkpoint would be useful, or when a
+long-lived parent/subtree reaches a stable point. Small exploratory tasks may
+stay uncommitted while the workflow is still moving.
+
+Development-mode work should have stronger commit checkpoints:
+
+- after a depth-1 feature/workstream or coherent depth-2 implementation subtree
+  is complete and verified
+- before switching to a substantially different product area
+- before handing work to another agent/session
+- after resolving a risky bug or migration where rollback clarity matters
+- before pushing or syncing to a GitHub issue/PR
+
+When a commit is appropriate, inspect status/diff, stage explicit files, and use
+`gcm`. Never use `git add .` by default. Never put Gest IDs in commit messages.
+Use GitHub issue footers only when the relevant Gest metadata contains a real
+GitHub issue and the commit semantically closes or references it.
+
+## Iterations And Phases
+
+Iterations are execution plans. Phases are parallelism boundaries.
+
+Use a **session iteration** for current-session work, including creative
+experimentation. Use a **development iteration** for larger scoped work that may
+span sessions or map to GitHub.
+
+Do not hardcode every task to `--phase 1`. Assign phases deliberately:
+
+- Phase 1: research, reproduction, or design
+- Phase 2: implementation
+- Phase 3: verification
+- Phase 4: docs, publishing, or cleanup
+
+Tasks in the same phase must be independent enough to run concurrently. If one
+task blocks another, put them in different phases and add a `blocked-by` link.
+
+## Parallel Work
+
+Parallel work can happen in session or development iterations. Decide based on
+the task graph, not the iteration kind.
+
+Use git worktrees/subagents when tasks are independent, code-touching, and risky
+to interleave in one working tree. Keep work local and sequential when tasks are
+tightly coupled, small, or dependent on immediate context.
+
+For parallel Gest orchestration:
+
+1. Claim tasks with `gest iteration next <iteration-id> --claim --agent <name>`.
+2. Create one git worktree per independent task when useful.
+3. Run implementation in each worktree.
+4. Merge or cherry-pick results before advancing to the next phase.
+5. Clean up worktrees after verification.
+
+Gest commands should be short and serialized where possible. In this workspace,
+local `.gest/` sync can make read-looking commands perform database writes.
+
+## Serialization And Storage
+
+Gest v0.5 stores the canonical data in:
+
+```text
+~/Library/Application Support/gest/gest.db
+```
+
+The `.gest/` directory is a local sync mirror. The database is the source of
+truth, but commands can import/export mirror changes. Debug output has shown
+`sync import` running before `gest task list`.
+
+Current SQLite pragmas observed locally:
+
+```text
+journal_mode=delete
+busy_timeout=0
+locking_mode=normal
+```
+
+The Gest maintainer noted that local and global modes both use the same global
+database, so the readonly warning is not inherently a local-mode issue. The
+recommended permission normalization is:
+
+```bash
+chmod 755 ~/Library/Application\ Support/gest/
+chmod 644 ~/Library/Application\ Support/gest/gest.db
+```
+
+Those permissions were already present locally. A non-escalated Codex run with
+`GEST_LOG__LEVEL=trace` reproduced `attempt to write a readonly database` during
+sync import, while the same trace run outside the sandbox did not. Treat that
+warning as likely environment/sandbox-related unless it also reproduces in a
+normal terminal.
+
+In Codex, this happens because the canonical Gest database is outside the
+workspace writable roots. A command such as `gest task list` can still write
+before listing because local sync imports mirrored `.gest/` state into tables
+such as `authors`, `tags`, `tasks`, `relationships`, `transactions`, and
+`sync_digests`.
+
+Codex command policy:
+
+- run Gest mutations with `require_escalated` because they must write to the
+  global database
+- for read-looking Gest commands, retry with `require_escalated` if they emit
+  `attempt to write a readonly database` or a sync-import readonly warning
+- request or use a narrow approval prefix such as `["gest"]`
+- keep Gest commands serialized even when escalated, except for deliberate
+  `gest iteration next --claim` orchestration
+
+Therefore:
+
+- do not run Gest commands in parallel during normal Codex work
+- use `--json` and `--quiet` for parseable outputs
+- verify state after any `database is locked` or sync warning before retrying
+- consider WAL/busy-timeout experiments only after backing up the database
+
+## Deferred Hooks
+
+The current workflow is intentionally skill-and-instruction driven. Do not add
+blocking hooks until the workflow has been used enough to see what actually
+helps and what gets in the way.
+
+Hook ideas to revisit:
+
+- **Session start**: inject a concise reminder of `gtw`, the `g*` skill family,
+  session/development classification, outline parenting, GitHub promotion, and
+  serialized Gest commands.
+- **Pre-edit**: inject project-local style and testing guidance before source
+  edits, for example `docs/dev/code-style.md`, `docs/dev/testing.md`, and any
+  project invariants.
+- **Pre-commit**: inject commit conventions, remind Codex never to include Gest
+  IDs in commit messages, and only use GitHub issue footers when metadata
+  exists.
+- **Gest safety**: warn or block malformed Gest commands, such as creating a
+  `subissue` without a `child-of` parent or running multiple Gest writes in
+  parallel.
+- **Worklog/session end**: capture concise session summaries or task notes when
+  a long session ends.
+
+Questions to answer after using the workflow:
+
+- Which reminders do agents actually forget?
+- Which checks are better as hooks versus `gtw` instructions?
+- Should hooks live in this parent workspace, global Codex config, or both?
+- Should hooks only inject context, or should any of them block commands?
+- Do parallel worktrees need hook support for per-worktree context?
+
+## Skill Family
+
+User-invoked Gest skills use three-letter names beginning with `g`.
+
+- `gtw`: Gest Track Work. Router/default skill for substantial work.
+- `gbs`: Gest Brainstorm. Explore ideas and decide whether a spec or outline is
+  needed.
+- `gsp`: Gest Spec. Draft or update a Gest spec artifact.
+- `gpl`: Gest Plan. Decompose a spec or outline task into tasks, phases, links,
+  and iterations.
+- `gis`: Gest Issue. Create or update durable Gest outline tasks.
+- `gpr`: Gest Promote. Promote or sync durable Gest work with GitHub issues.
+- `gim`: Gest Implement. Implement one concrete Gest task end to end.
+- `gor`: Gest Orchestrate. Execute a phased iteration, sequentially or in
+  parallel depending on task independence.
+- `grv`: Gest Review. Review the current changeset.
+- `gfm`: Gest Format. Run formatting, linting, and verification.
+- `gcm`: Gest Commit. Create a Git commit tied to GitHub metadata when present.
+
+Optional later skills:
+
+- `gcl`: Gest Changelog.
+- `gdc`: Gest Doc Code.
+- `gps`: Gest Promote Spec.
+
+`gtw` should route to these stages conceptually. The user may invoke any stage
+directly, but ordinary requests can simply use `gtw` or natural language.
+
+## Stage Responsibilities
+
+### GTW
+
+1. Inspect existing Gest state.
+2. Classify request as session/development and spec/no-spec.
+3. Choose or create the best outline parent.
+4. Decide tags, metadata, and depth.
+5. Decide if parallel work is useful.
+6. Create/claim concrete leaf tasks before edits.
+7. Route to the appropriate stage skill.
+8. Complete leaf tasks after verification and report IDs.
+
+### GBS
+
+1. Explore existing code/docs/Gest context.
+2. Ask clarifying questions when necessary.
+3. Propose approaches and trade-offs.
+4. Decide whether to create a spec, issue, plan, or session leaf.
+
+### GSP
+
+1. Draft problem, scope, proposed behavior, acceptance criteria, and open
+   questions.
+2. Review with the user when the direction is not settled.
+3. Save as a Gest artifact tagged `spec`.
+4. Link the artifact to outline tasks when appropriate.
+
+### GPL
+
+1. Read a spec, outline task, or GitHub-backed task.
+2. Decide single-task vs multi-task decomposition.
+3. Create depth 1/depth 2 tasks.
+4. Assign explicit phases and blocking links.
+5. Create or update session/development iterations.
+6. Report parallelization opportunities.
+
+### GIS
+
+1. Draft user story, context, and acceptance criteria.
+2. Create or update a durable Gest task.
+3. Apply `outline`, `issue`, or `subissue` tags.
+4. Link with `child-of` and set depth metadata.
+
+### GPR
+
+1. Read the task/iteration/spec to promote.
+2. Sanitize internal details.
+3. Draft GitHub issue body.
+4. Ask user confirmation before `gh issue create` or `gh issue edit`.
+5. Store GitHub metadata on Gest entities.
+
+### GIM
+
+1. Read and claim one concrete task.
+2. Split it first if it is too broad.
+3. Implement minimal scoped changes.
+4. Verify with repo-appropriate commands.
+5. Review and format as needed.
+6. Complete the leaf task and add parent notes/status updates.
+
+### GOR
+
+1. Read iteration status and graph.
+2. Group tasks by phase.
+3. Decide sequential vs parallel execution per phase.
+4. Use git worktrees/subagents for independent tasks when useful.
+5. Integrate results and advance phases.
+6. Clean up worktrees and report failures.
+
+### GRV
+
+Review the current changeset for correctness, safety, regressions, style, and
+test coverage. Findings come first.
+
+### GFM
+
+Run formatting, linting, compile/static checks, tests, and project-specific smoke
+checks. Fix mechanical issues.
+
+### GCM
+
+Inspect status/diff/log, draft a conventional commit, ask for confirmation,
+stage explicit files, and commit. Include GitHub issue footers only when
+metadata exists. Never include Gest IDs in commit messages.
+
+## Close Reading Defaults
+
+Replace these examples with commands for the target project:
+
+```bash
+uv run ruff check .
+node --check app/static/app.js
+uv run python -m compileall app scripts
+uv run python scripts/smoke_check.py
+git diff --check
+```
+
+Run verification from the project root unless local project instructions say
+otherwise.

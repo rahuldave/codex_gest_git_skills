@@ -1,0 +1,165 @@
+---
+name: gtw
+description: Gest Track Work. Use for substantial coding, debugging, implementation, refactoring, documentation, verification, GitHub issue planning, or project work. GTW is the router that classifies requests, chooses/creates Gest outline parents, creates session or development tasks, decides whether a spec or parallel work is needed, and routes to the g* stage skills.
+---
+
+# GTW: Gest Track Work
+
+GTW is the default entry point for Gest-tracked work in this repository.
+
+Read `docs/gest_codex_workflow.md` when more detail is needed. Keep
+project-specific workflow notes in this repository or in user-level Codex
+configuration.
+
+## Core Job
+
+Before editing files, decide:
+
+1. Is this a tiny untracked answer, a session task, or development work?
+2. Does it need a spec before implementation?
+3. Which durable outline task should parent this work?
+4. Which tags and metadata apply?
+5. Are there independent tasks that should run in parallel worktrees?
+6. Is GitHub promotion appropriate?
+7. Which stage skill should handle the next step?
+8. Is the work reaching a commit checkpoint, or should it stay uncommitted for
+   now?
+
+Everything substantial should become a Gest task/issue with appropriate
+dependencies.
+
+## Inspect First
+
+Serialize Gest commands. In this workspace, local `.gest/` sync can make
+read-looking commands write to SQLite.
+
+Codex sandbox note: Gest's canonical database lives at
+`~/Library/Application Support/gest/gest.db`, outside the workspace writable
+roots. Run Gest mutations with `require_escalated`. If a read-looking command
+emits `attempt to write a readonly database` or a sync-import readonly warning,
+retry it with `require_escalated`. Use a narrow approval prefix such as
+`["gest"]`.
+
+```bash
+gest search "<short phrase>" --all --json
+gest task list --all --json
+gest iteration list --all --json
+```
+
+If Gest is unavailable in the current directory, run from the repository root or
+initialize the project with `gest init --local`.
+
+## Classification
+
+Choose one:
+
+- `session leaf only`: small tactical work.
+- `session leaf under outline`: small work under an existing durable parent.
+- `new outline plus session leaves`: new durable area but not GitHub-scale.
+- `development iteration`: larger, multi-session, spec-worthy, GitHub-worthy, or
+  phased work.
+
+Promote session-shaped work to development when it needs a spec/design decision,
+spans sessions, should be visible on GitHub, has durable acceptance criteria,
+creates a reusable product area, or requires staged delivery.
+
+## Parenting
+
+Use native Gest `child-of` links for hierarchy. Tags are filters, not hierarchy.
+
+Preferred depth:
+
+- depth 0: product area / GitHub-scale initiative
+- depth 1: coherent feature or subsystem
+- depth 2: concrete implementable task
+- depth 3: tiny tactical subtask when useful
+
+Long-lived outline parents may remain open across sessions. Do not complete a
+parent just because a session leaf is complete.
+
+## Tags And Metadata
+
+Use tags such as `session`, `development`, `outline`, `issue`, `subissue`,
+`parent`, `leaf`, `github`, area tags, and work-type tags.
+
+Use metadata for source-of-truth facts:
+
+```text
+workflow.kind=session|development
+depth=<0-3>
+github.issue=<number>
+github.url=<url>
+outline.root=<gest-task-id>
+parent_task=<gest-task-id>
+```
+
+## Creating Work
+
+Create or reuse an active session/development iteration. Assign phases
+deliberately; do not hardcode everything to phase 1.
+
+Create concrete leaves before edits:
+
+```bash
+gest task create "<Leaf title>" \
+  -d "<Concrete verifiable work>" \
+  -i <iteration-id> \
+  --phase <phase-number> \
+  -l child-of:<parent-id> \
+  --tag session \
+  --tag leaf \
+  --metadata workflow.kind=session \
+  --metadata depth=2 \
+  --quiet
+
+gest task claim --as codex <leaf-id> --quiet
+```
+
+## Stage Routing
+
+- `gbs`: explore rough ideas.
+- `gsp`: create/update a spec artifact.
+- `gpl`: decompose a spec/outline into tasks, phases, and iterations.
+- `gis`: create/update durable Gest outline tasks.
+- `gpr`: promote/sync durable work with GitHub issues.
+- `gim`: implement one concrete task.
+- `gor`: execute a phased iteration, sequentially or in parallel.
+- `grv`: review current changes.
+- `gfm`: format/lint/test.
+- `gcm`: commit.
+
+## Commit Cadence
+
+Committing is not a Gest task by itself. Do not create tasks whose only purpose
+is a normal Git commit.
+
+Session work does not auto-commit every small leaf. Commit when the user asks,
+when there is a coherent checkpoint, or when a long-lived parent/subtree reaches
+a stable point.
+
+Development work should be committed at verified durable checkpoints: after a
+depth-1 workstream or coherent depth-2 subtree, before switching product areas,
+before handoff, after risky bug/migration work, or before GitHub issue/PR sync.
+Use `gcm`, stage explicit files, and never put Gest IDs in commit messages.
+
+## Completion
+
+Verify before completing tasks. Complete the leaf task only after verification.
+For non-trivial leaf tasks, add a concise completion note before marking the
+task done. Keep the original description as the task intent; use notes for what
+actually happened.
+
+```bash
+gest task note add <id> --agent codex --body "Done: ...\nVerification: ...\nFollow-up: ..."
+gest task complete <id> --quiet
+```
+
+Use `Done` and `Verification` in every completion note. Add `Follow-up` only
+when there is a real residual issue or next step. Use metadata for
+machine-queryable facts, not prose summaries.
+
+Update parent notes/status when useful, but leave outline parents open unless
+the whole subtree is done.
+
+Final responses should include relevant Gest IDs, files changed, verification
+commands/results, and any GitHub issue URL.
