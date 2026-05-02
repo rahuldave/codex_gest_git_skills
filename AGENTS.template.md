@@ -7,6 +7,11 @@ project planning.
 
 The user may invoke the router as `$gtw`, `gtw:`, or `/gtw`.
 
+If a request is substantial enough for Gest tracking but no `g*` command was
+explicitly invoked, still use the appropriate Gest workflow. If an agent chooses
+not to use Gest for a coding/debugging/refactoring/documentation/verification
+request, it must say why in the final response.
+
 ## Project Context
 
 - Project name: `<replace-me>`
@@ -98,3 +103,5 @@ For frontend, browser UI, or interaction changes, use the `agent-browser` skill
 to inspect the running app visually and exercise the relevant interaction flow.
 Do this in addition to code checks so visual regressions and broken browser
 gestures are caught before handoff.
+If browser-agent verification cannot be completed, say exactly why in the final
+response and do not imply the interaction was checked.
