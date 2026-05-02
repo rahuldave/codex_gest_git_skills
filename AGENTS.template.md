@@ -94,3 +94,7 @@ Replace with project commands, for example:
 git diff --check
 ```
 
+For frontend, browser UI, or interaction changes, use the `agent-browser` skill
+to inspect the running app visually and exercise the relevant interaction flow.
+Do this in addition to code checks so visual regressions and broken browser
+gestures are caught before handoff.
