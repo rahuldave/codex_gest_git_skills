@@ -10,8 +10,8 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
 ## What Is Included
 
 - `.agents/skills/g*`: project-local Codex skills for Gest workflow routing,
-  planning, implementation, review, formatting, promotion, orchestration, and
-  commits.
+  planning, implementation, review, formatting, testing, docs, promotion,
+  orchestration, and commits.
 - `AGENTS.template.md`: starter agent instructions to copy into a target repo.
 - `docs/gest_codex_workflow.md`: the full workflow playbook.
 - `docs/g_commands_cheatsheet.md`: quick user-facing guide to `/gtw` and the
@@ -72,4 +72,3 @@ After creating a GitHub token/session:
 gh auth login -h github.com
 gh repo create codex_gest_git_skills --public --source . --remote origin --push
 ```
-

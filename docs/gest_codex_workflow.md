@@ -1,6 +1,6 @@
 # Gest-Codex Workflow
 
-Last updated: 2026-05-01.
+Last updated: 2026-05-03.
 
 This document defines how Codex should use Gest, GitHub, and the local skill
 family while working in a project repository. The goal is to preserve creative
@@ -43,6 +43,13 @@ Every concrete implementation task should have a parent unless it is truly
 standalone. Long-lived outline parents may remain open across multiple sessions.
 Do not complete a parent just because one session leaf is done.
 
+For multi-stage substantial work, create a small GTW-owned task treelet. The
+parent represents the user request. Child leaves represent the stage commands
+that are separately verifiable, for example `gsp`, `gpl`, `gim`, `gfm`, `gte`,
+`gdo`, `grv`, `gpr`, and `gcm`. Do not create busywork tasks for trivial stages,
+but do record in the completion note which stages ran or were intentionally
+skipped.
+
 ## Classification
 
 Before editing files, Codex decides which class fits the request:
@@ -80,6 +87,9 @@ Do not bury implementation work inside the spec artifact itself.
 GitHub issues are for durable external visibility, not for every leaf task.
 Promote work to GitHub when it is user-visible, architecture-relevant,
 multi-session, release-worthy, or worth tracking outside the local Gest ledger.
+For development depth-1 parents and development iterations, the GitHub decision
+is mandatory: create or sync the issue with `gpr`, or record why the work is
+staying local.
 
 When a GitHub issue exists, store it as metadata on both the development
 iteration and the top-level outline task when applicable:
@@ -232,17 +242,19 @@ Checkpoint steps:
    iteration. Treat graph generation as a Gest database operation: do not run it
    in parallel with any `gest` command.
 2. For user-visible, architecture-relevant, multi-session, or release-worthy
-   work, decide whether GitHub promotion is appropriate. If it is appropriate,
-   use `gpr` or create/update the GitHub issue and write `github.issue` /
-   `github.url` metadata back to Gest. If you intentionally skip GitHub
-   promotion, record why in the task note or final summary.
+   work, decide whether GitHub promotion is appropriate. For development
+   depth-1 parents and development iterations, this decision is mandatory. Use
+   `gpr` to create/update the GitHub issue and write `github.issue` /
+   `github.url` metadata back to Gest, or record the explicit reason promotion
+   was skipped in the task note or final summary.
 3. For every Codex-created commit, verify push state with
    `git status --short --branch`. If an upstream exists and the branch is
    ahead, push it or record the explicit local-only/blocker reason. Report the
    final branch relationship separately from the GitHub issue decision.
-4. For substantial code changes, run an explicit review pass before or at the
-   checkpoint. Use `grv` or a code-review stance over the current diff/commit,
-   then fix or record any findings before closing the parent or iteration.
+4. For every code change, run an explicit review pass before task completion.
+   Use `grv` or a code-review stance over the current diff/commit, then fix or
+   record any findings before closing the leaf, parent, or iteration. Missing
+   focused tests for changed callable code or APIs are review findings.
 5. Verify the final Gest status after closing the parent or iteration and report
    the graph paths, commit hashes, push status, review status, and GitHub issue
    decision.
@@ -401,7 +413,11 @@ User-invoked Gest skills use three-letter names beginning with `g`.
 - `gor`: Gest Orchestrate. Execute a phased iteration, sequentially or in
   parallel depending on task independence.
 - `grv`: Gest Review. Review the current changeset.
-- `gfm`: Gest Format. Run formatting, linting, and verification.
+- `gfm`: Gest Format. Run formatting, linting, typechecking, compile/static
+  checks, and diff hygiene.
+- `gte`: Gest Test. Run unit, regression, smoke, API, and integration tests.
+- `gdo`: Gest Docs. Create, update, and verify user-facing, developer-facing,
+  and in-code docs affected by the task.
 - `gcm`: Gest Commit. Create a Git commit tied to GitHub metadata when present.
 
 Optional later skills:
@@ -422,7 +438,8 @@ directly, but ordinary requests can simply use `gtw` or natural language.
 3. Choose or create the best outline parent.
 4. Decide tags, metadata, and depth.
 5. Decide if parallel work is useful.
-6. Create/claim concrete leaf tasks before edits.
+6. Create/claim concrete leaf tasks before edits. For multi-stage work, create
+   a treelet with child leaves for separately verifiable stage commands.
 7. Route to the appropriate stage skill.
 8. Complete leaf tasks after verification and report IDs.
 
@@ -470,9 +487,12 @@ directly, but ordinary requests can simply use `gtw` or natural language.
 1. Read and claim one concrete task.
 2. Split it first if it is too broad.
 3. Implement minimal scoped changes.
-4. Verify with repo-appropriate commands.
-5. Review and format as needed.
-6. Complete the leaf task and add parent notes/status updates.
+4. Run `gfm` for mechanical checks.
+5. Run `gte` for tests; changed callable code and APIs need focused tests.
+6. Run `gdo` when user-facing docs, developer-facing docs, or in-code docs are
+   affected.
+7. Run `grv` after every code change.
+8. Complete the leaf task and add parent notes/status updates.
 
 ### GOR
 
@@ -486,12 +506,26 @@ directly, but ordinary requests can simply use `gtw` or natural language.
 ### GRV
 
 Review the current changeset for correctness, safety, regressions, style, and
-test coverage. Findings come first.
+test coverage. Findings come first. Run after every code change before task
+completion.
 
 ### GFM
 
-Run formatting, linting, compile/static checks, tests, and project-specific smoke
-checks. Fix mechanical issues.
+Run formatting, linting, typechecking, compile/static checks, and diff hygiene.
+Fix mechanical issues. Do not use `gfm` as a substitute for tests.
+
+### GTE
+
+Run unit tests, API regression tests, smoke checks, and integration/browser
+checks appropriate to the change. Add tests when changed callable code lacks
+focused coverage.
+
+### GDO
+
+Check whether user-facing docs, developer-facing docs, or in-code docs are
+needed, then create or update them. Prefer documented and typed code when it
+clarifies callable behavior, public contracts, non-obvious domain logic, or
+future maintenance.
 
 ### GCM
 
@@ -505,11 +539,19 @@ Replace these examples with commands for the target project:
 
 ```bash
 uv run ruff check .
-node --check app/static/app.js
-uv run python -m compileall app scripts
+uv run ty check
+uv run python -m compileall <packages> <scripts>
+uv run pytest tests regression_tests
 uv run python scripts/smoke_check.py
 git diff --check
 ```
 
 Run verification from the project root unless local project instructions say
 otherwise.
+
+Recommended test layout:
+
+- `tests/`: inner-function and focused callable-code unit tests.
+- `regression_tests/`: bug and API regression tests.
+- `integration_tests/`: end-to-end and browser-agent-driven checks, preferably
+  as rerunnable shell scripts for repeated UI flows.

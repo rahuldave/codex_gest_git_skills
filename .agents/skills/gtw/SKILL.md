@@ -28,6 +28,13 @@ Before editing files, decide:
 Everything substantial should become a Gest task/issue with appropriate
 dependencies.
 
+For multi-stage substantial work, create a small GTW-owned treelet: one parent
+task for the user request, with child leaves for separately verifiable stages
+such as `gsp`, `gpl`, `gim`, `gfm`, `gte`, `gdo`, `grv`, `gpr`, and `gcm`.
+Small tactical work may combine mechanical stages in one leaf, but the
+completion note must still say which verification/review/promotion stages ran
+or were intentionally skipped.
+
 ## Inspect First
 
 Serialize Gest commands. In this workspace, local `.gest/` sync can make
@@ -125,7 +132,9 @@ gest task claim --as codex <leaf-id> --quiet
 - `gim`: implement one concrete task.
 - `gor`: execute a phased iteration, sequentially or in parallel.
 - `grv`: review current changes.
-- `gfm`: format/lint/test.
+- `gfm`: format/lint/typecheck/static checks.
+- `gte`: run unit, regression, smoke, and integration tests.
+- `gdo`: update and verify docs.
 - `gcm`: commit.
 
 ## Commit Cadence
@@ -163,13 +172,13 @@ At every durable checkpoint, run the cleanup that future agents need:
   iteration
 - treat graph generation as a Gest database operation and do not run it in
   parallel with `gest`
-- decide whether GitHub promotion/sync is appropriate for user-visible,
-  architecture-relevant, multi-session, or release-worthy work; if not, record
-  why
+- for every development depth-1 parent and development iteration, run the
+  explicit `gpr` decision: create/sync the GitHub issue and record
+  `github.issue`/`github.url`, or record why it was not promoted
 - verify push state for each Codex-created commit; do not finish a checkpoint
   with an unmentioned `ahead` branch
-- run an explicit review pass for substantial code changes before closing a
-  depth-1 parent or iteration
+- run `grv` after every code change before task completion, even for quick
+  development without a pull request
 - report graph paths, commit hashes, push status, review status, and GitHub
   issue decision
 

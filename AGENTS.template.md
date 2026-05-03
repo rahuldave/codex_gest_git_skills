@@ -82,11 +82,14 @@ an iteration, or handing off after substantial implementation. Regenerate the
 overall Gest graph and a focused graph for the latest relevant iteration; treat
 graph generation like a Gest database operation and do not run it in parallel
 with `gest` commands. For user-visible, architecture-relevant, multi-session, or
-release-worthy work, decide whether to promote/sync a GitHub issue with `gpr`;
-if not, record why. For substantial code changes, run an explicit review pass
-with `grv` or code-review stance before closing the parent/iteration. Report
-graph paths, commit hashes, push status, review status, and the GitHub issue
-decision.
+release-worthy work, decide whether to promote/sync a GitHub issue with `gpr`.
+For every development depth-1 parent and development iteration, the `gpr`
+decision is mandatory: create/sync the GitHub issue and store `github.issue` /
+`github.url`, or record why it was not promoted. After every code change, run an
+explicit review pass with `grv` or code-review stance before completing the
+task. Treat missing focused tests for changed callable code or APIs as review
+findings. Report graph paths, commit hashes, push status, review status, and
+the GitHub issue decision.
 
 ## Verification
 
@@ -95,9 +98,22 @@ Replace with project commands, for example:
 ```bash
 <format command>
 <lint command>
+<typecheck command>
 <test command>
 git diff --check
 ```
+
+Use `gfm` for formatting, linting, typechecking, compile/static checks, and
+diff hygiene. Use `gte` for unit tests, API regression tests, smoke checks, and
+integration tests. Use `gdo` to check and update user-facing docs,
+developer-facing docs, and in-code docs.
+
+Recommended test layout:
+
+- `tests/`: inner-function and focused callable-code unit tests.
+- `regression_tests/`: bug and API regression tests.
+- `integration_tests/`: end-to-end and browser-agent-driven checks. Repeated
+  browser-agent flows should become rerunnable shell scripts here.
 
 For frontend, browser UI, or interaction changes, use the `agent-browser` skill
 to inspect the running app visually and exercise the relevant interaction flow.

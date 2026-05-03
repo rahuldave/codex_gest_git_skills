@@ -44,7 +44,9 @@ A good default prompt is:
 | `gim` | Gest Implement | One concrete Gest task should be implemented end to end. |
 | `gor` | Gest Orchestrate | A phased iteration should be executed, possibly with parallel worktrees/subagents. |
 | `grv` | Gest Review | Current changes or a commit need code-review-style findings. |
-| `gfm` | Gest Format | Formatting, linting, tests, smoke checks, or mechanical fixes are needed. |
+| `gfm` | Gest Format | Formatting, linting, typechecking, static checks, or mechanical fixes are needed. |
+| `gte` | Gest Test | Unit, API regression, smoke, regression, or integration tests are needed. |
+| `gdo` | Gest Docs | User-facing, developer-facing, or in-code docs need to be checked and updated. |
 | `gcm` | Gest Commit | A verified checkpoint should be committed with an appropriate message. |
 
 ## Quick Decision Guide
@@ -60,7 +62,9 @@ know the stage you want.
 - Use `gim` when one claimed leaf task is ready to implement.
 - Use `gor` when an iteration has multiple phases or parallelizable tasks.
 - Use `grv` when you want bugs and risks, not a summary.
-- Use `gfm` when you want checks run and mechanical issues fixed.
+- Use `gfm` when you want mechanical checks and fixes.
+- Use `gte` when you want behavioral tests run or added.
+- Use `gdo` when docs or code documentation may need to be created or updated.
 - Use `gcm` when the work has reached a verified commit checkpoint.
 
 ## Typical Flows
@@ -74,7 +78,7 @@ know the stage you want.
 Likely path:
 
 ```text
-gtw -> inspect existing tasks -> create/claim leaf -> gim -> gfm -> gcm
+gtw -> inspect existing tasks -> create/claim leaf -> gim -> gfm -> gte -> grv -> gcm
 ```
 
 ### Large Feature
@@ -86,7 +90,7 @@ gtw -> inspect existing tasks -> create/claim leaf -> gim -> gfm -> gcm
 Likely path:
 
 ```text
-gtw -> gbs or gsp -> gpl -> gis -> gim/gor -> grv -> gfm -> gcm -> gpr decision
+gtw -> gbs or gsp -> gpl -> gis -> gim/gor -> gfm -> gte -> gdo -> grv -> gcm -> gpr decision
 ```
 
 ### Planning Only
@@ -133,8 +137,9 @@ At durable checkpoints, Codex should also:
 
 - regenerate the overall Gest graph
 - regenerate a focused graph for the latest relevant iteration
-- decide whether GitHub promotion/sync is appropriate
-- run an explicit review pass for substantial code
+- run the explicit GitHub promotion/sync decision for development parents and
+  iterations
+- run an explicit review pass after every code change
 - report graph paths, commit hashes, review status, and GitHub issue decision
 
 ## Naming Notes

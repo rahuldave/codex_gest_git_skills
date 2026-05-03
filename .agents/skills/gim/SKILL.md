@@ -14,9 +14,16 @@ Use for one concrete implementable Gest task.
 3. Claim it: `gest task claim --as codex <id> --quiet`
 4. Inspect relevant code and docs.
 5. Make scoped edits.
-6. Verify with project-appropriate commands.
-7. Run `grv` and `gfm` when risk warrants it.
-8. For non-trivial leaf tasks, add a completion note before completion. Preserve
+6. Run `gfm` for formatting, linting, typechecking, compile/static checks, and
+   diff hygiene.
+7. Run `gte` for focused unit/API regression tests, smoke checks, and
+   integration/browser checks appropriate to the changed behavior. Any changed
+   callable code needs tests; smoke checks alone are not enough.
+8. Run `gdo` when user docs, developer docs, workflow docs, examples, or command
+   references are affected.
+9. Run `grv` after every code change, even for quick development without a pull
+   request. Fix or record findings before completion.
+10. For non-trivial leaf tasks, add a completion note before completion. Preserve
    the task description as intent; record what actually happened in the note:
 
 ```bash
@@ -26,7 +33,7 @@ gest task note add <id> --agent codex --body "Done: ...\nVerification: ...\nFoll
 Use `Done` and `Verification` in every completion note. Add `Follow-up` only
 when there is a real residual issue or next step.
 
-9. Complete the task only after verification and the completion note:
+11. Complete the task only after verification, review, and the completion note:
 
 ```bash
 gest task complete <id> --quiet
@@ -35,14 +42,19 @@ gest task complete <id> --quiet
 Update parent notes/status when useful. Do not complete long-lived outline
 parents unless the full subtree is done.
 
-## Close Reading Checks
+## Checks
 
-From `close_reading/`:
+Use project-local commands. A typical Python/web project may include:
 
 ```bash
 uv run ruff check .
-node --check app/static/app.js
-uv run python -m compileall app scripts
+uv run ty check
+uv run python -m compileall <packages> <scripts>
+uv run pytest tests regression_tests
 uv run python scripts/smoke_check.py
 git diff --check
 ```
+
+Use `integration_tests/` scripts or direct browser-agent checks for frontend,
+UI, and interaction changes. If no durable integration script exists for a
+repeated browser flow, record that follow-up.

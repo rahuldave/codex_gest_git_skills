@@ -33,11 +33,13 @@ real `Follow-up`. Never include Gest IDs.
 
 After creating a commit, run checkpoint hygiene: regenerate the overall Gest
 graph and a focused graph for the latest relevant iteration, serialized away
-from `gest` commands. For substantial code commits, ensure an explicit review
-pass has happened or run one immediately. Also make and verify a push/sync
-decision: `git push` is separate from GitHub issue promotion. Report graph
-paths, the commit hash, final branch relationship, push status, review status,
-and whether GitHub issue promotion/sync is appropriate.
+from `gest` commands. For any code commit, ensure `grv` has happened after the
+code change or run it immediately. Also make and verify a push/sync decision:
+`git push` is separate from GitHub issue promotion. For development depth-1
+parents or development iterations, run the explicit `gpr` decision: create/sync
+the GitHub issue and record metadata, or record why promotion was skipped.
+Report graph paths, the commit hash, final branch relationship, push status,
+review status, and the GitHub issue decision.
 
 ## Workflow
 
