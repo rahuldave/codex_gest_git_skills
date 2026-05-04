@@ -58,7 +58,8 @@ Identify which of these concepts apply to the project:
    - TypeScript/JavaScript: `package.json`, lockfiles, Vite, Next, ESLint,
      Biome, TypeScript, Vitest, Jest, Playwright.
    - Rust: `Cargo.toml`, Cargo workspaces, clippy, rustfmt, rustdoc.
-5. Ask the user to choose when multiple plausible tools exist or installation
+5. Ask the user to choose when multiple plausible tools exist, when profile
+   tradeoffs affect committed files, or when installation
    would change the machine or repository. Prefer one concise question at a
    time.
 6. Create or update ignore rules for generated files, local environments,
@@ -88,12 +89,35 @@ starting points, not as blind overwrites:
 - `templates/gitignore/typescript-npm.gitignore`
 - `templates/gitignore/browser-agent.gitignore`
 - `templates/env/envrc.local-bin`
+- `templates/env/*profile*.envrc` and related profile env snippets
 - `templates/env/env.example`
 - `templates/just/*.just`
 
 Every setup should include the base ignore concepts. Add profile snippets only
 when the project needs them. If existing project files already cover the same
 patterns, preserve the local style and avoid duplicate churn.
+
+## Profile Synthesis
+
+When the project profile is not covered by existing snippets, synthesize a
+candidate profile instead of stopping. Work in this order:
+
+1. Identify the project type, package manager, runtime, build tool, test tool,
+   docs tool, and any generated artifacts.
+2. Ask the smallest necessary questions where defaults have real consequences.
+   Examples: Rust app vs library for `Cargo.lock`, Python app vs package,
+   whether ML datasets/models should be ignored or versioned, or which Node
+   package manager should own the lockfile.
+3. Draft candidate `.gitignore`, `Justfile`, `.env.example`, `.envrc`, and
+   `AGENTS.md` command-contract snippets.
+4. Apply them to a disposable project or current repo after confirmation.
+5. Run setup verification and revise the snippets.
+6. If the profile is generally useful, add it to `templates/` and document the
+   questions/tradeoffs.
+
+Do not silently invent project policy for expensive or irreversible choices.
+Ask before ignoring data directories, generated code, model artifacts, lockfiles,
+or credentials.
 
 ## Command Contract
 
@@ -121,12 +145,61 @@ instead of hard-coding language tools.
 
 ## Tool Installation Policy
 
-Use the project package manager where possible. Examples:
+Check the required toolchain before running setup commands. If a required tool
+is missing, ask the user before installing it and prefer the least surprising
+installer for their platform/project. Use the project package manager where
+possible. Examples:
 
 - Python: prefer `uv`, `pixi`, or the tool already chosen by the project.
 - TypeScript/JavaScript: prefer the detected package manager (`pnpm`, `npm`,
   `bun`, or `yarn`) and use package-manager exec commands.
 - Rust: prefer `rustup`/`cargo` conventions already present in the project.
+- Go: prefer the standard Go toolchain first (`gofmt`, `go test`, `go build`,
+  `go vet`) unless the project already uses a separate tool.
+
+Common checks:
+
+```bash
+git --version
+gest --version
+just --version
+direnv version
+uv --version
+node --version
+npm --version
+go version
+cargo --version
+rustc --version
+```
+
+Profile install prompts should be concrete:
+
+- Python/uv: ask before installing `uv`; then use `uv sync`.
+- TypeScript/npm: ask before installing Node/npm or an alternate package
+  manager; then use the chosen install command.
+- Go: ask before installing Go; then use `go mod tidy` or `go test ./...` to
+  populate module state.
+- Rust: ask before installing Rust via `rustup`; then use Cargo commands.
+- Browser UI: ask before installing browser-agent runtime with
+  `npx agent-browser install` or the global `agent-browser install`.
+
+Prefer project-local dependency state and version pins:
+
+- Python/uv: dependencies live in `.venv/`; commit `uv.lock` when present.
+  Prefer `UV_CACHE_DIR=.local/uv-cache` when setup should avoid ambient caches.
+- TypeScript/npm: dependencies live in `node_modules/`; commit
+  `package-lock.json`; use a project-local npm cache such as
+  `.local/npm-cache` when useful.
+- Browser-agent in Node projects: prefer a dev dependency plus
+  `npm exec -- agent-browser ...` for a pinned project-local CLI. Use
+  `npx agent-browser ...` when the project has no Node package setup or the user
+  wants on-demand execution.
+- Go: commit `go.mod` and `go.sum` when generated; the Go toolchain itself is
+  usually external but versioned by the `go` directive. Prefer
+  absolute local cache paths such as `GOCACHE="$PWD/.local/go-build"` and
+  `GOMODCACHE="$PWD/.local/go-mod"` when setup should avoid ambient caches.
+- Rust: commit `rust-toolchain.toml` when the project wants a pinned toolchain;
+  Cargo build artifacts stay local under `target/`.
 
 For tools that should be available only inside this repository, prefer an
 explicit project-local path such as `.local/bin` exposed through `.envrc`:
@@ -134,6 +207,20 @@ explicit project-local path such as `.local/bin` exposed through `.envrc`:
 ```sh
 PATH_add .local/bin
 ```
+
+Use `direnv` for project activation when local tools or cache variables should
+be in force for every command. For example, a Python/uv project can use:
+
+```sh
+PATH_add .local/bin
+export UV_CACHE_DIR="$PWD/.local/uv-cache"
+```
+
+Keep critical environment assumptions visible in `AGENTS.md` and the command
+contract even when `.envrc` sets them, because CI or non-direnv shells may need
+the same variables.
+Running `direnv allow` writes to user-level direnv state, so treat it as a
+setup action that may require approval in sandboxed environments.
 
 Do not silently rely on ambient global tools when the project contract says a
 local toolchain is required. If installation needs network or writes outside
@@ -159,6 +246,24 @@ For a simple Node-targeted TypeScript project, a good starting profile is:
 - dev dependencies: `typescript`, `@types/node`, and the chosen formatter/linter
 - lint defaults: source and config files, not generated outputs such as `dist/`
 
+For a simple Rust/Cargo project, a good starting profile is:
+
+- formatter: `cargo fmt --all`
+- lint: `cargo clippy --all-targets --all-features -- -D warnings`
+- typecheck: `cargo check --all-targets --all-features`
+- build: `cargo build --all-targets --all-features`
+- tests: `cargo test --all-features`
+- docs: `cargo doc --no-deps`
+- ask whether to commit `Cargo.lock`; apps usually should, libraries may not
+
+For a simple Go project, a good starting profile is:
+
+- formatter: `gofmt -w .`
+- lint/static check: `go vet ./...`
+- typecheck/build: `go build ./...`
+- tests: `go test ./...`
+- docs: `go doc ./...` when useful
+
 ## Browser Setup
 
 When a project has browser UI, ask the user whether browser-agent checks should
@@ -173,6 +278,17 @@ browser-setup:
 
 browser url="http://127.0.0.1:3000":
   npx agent-browser open {{url}}
+```
+
+For Node projects that want pinned folder-local CLI dependencies, add
+`agent-browser` to `devDependencies` and use:
+
+```just
+browser-setup:
+  npm exec -- agent-browser install
+
+browser url="http://127.0.0.1:3000":
+  npm exec -- agent-browser open {{url}}
 ```
 
 If the team wants the faster global CLI, document and verify:
@@ -209,8 +325,8 @@ hiding important source artifacts. Common setup-owned ignores include:
 ## Environment Files
 
 If the project needs environment variables, commit `.env.example` and ignore
-`.env`. Use `.envrc` when the project needs per-repo PATH or environment setup,
-such as exposing `.local/bin`:
+`.env`. Use `.envrc` when the project needs per-repo PATH, local tool setup, or
+cache variables, such as exposing `.local/bin`:
 
 ```sh
 PATH_add .local/bin

@@ -6,7 +6,9 @@ example `/gtw fix the search bug`, `$gtw plan annotation import`, or
 `gcm: commit the verified slice`.
 
 For a setup-focused TypeScript hello-world lab, read
-[`gsu_typescript_hello_world.md`](gsu_typescript_hello_world.md). For the longer
+[`gsu_typescript_hello_world.md`](gsu_typescript_hello_world.md). For verified
+Python, TypeScript, Go, and Rust profile labs, read
+[`gsu_language_profile_labs.md`](gsu_language_profile_labs.md). For the longer
 explanation and hands-on Git/GitButler reproduction lab, read
 [`gest_gitbutler_workflow_guide.md`](gest_gitbutler_workflow_guide.md).
 

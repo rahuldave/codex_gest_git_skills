@@ -1,3 +1,5 @@
+export UV_CACHE_DIR := ".local/uv-cache"
+
 setup:
   uv sync
 
@@ -8,4 +10,4 @@ typecheck:
   uv run ty check
 
 test target="tests":
-  uv run pytest {{target}}
+  uv run python -m pytest {{target}}

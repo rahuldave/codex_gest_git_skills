@@ -18,6 +18,8 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
   other g-command skills.
 - `docs/gsu_typescript_hello_world.md`: disposable setup lab for a tiny
   TypeScript project using `gsu` concepts and `just` command contracts.
+- `docs/gsu_language_profile_labs.md`: verified setup labs for Python/uv,
+  TypeScript/npm, Go, and Rust/Cargo profiles.
 - `docs/gest_gitbutler_workflow_guide.md`: user-facing setup and practice guide
   for Gest, the g skills, GitButler stacks, and physical worktrees.
 - `tools/gest_mermaid_graph.py`: optional read-only Gest SQLite exporter that
@@ -50,6 +52,8 @@ Use `templates/` as `gsu` inputs when creating `.gitignore`, `.envrc`,
 
 For a small setup-first example, read
 [`docs/gsu_typescript_hello_world.md`](docs/gsu_typescript_hello_world.md).
+For broader language-profile coverage, read
+[`docs/gsu_language_profile_labs.md`](docs/gsu_language_profile_labs.md).
 
 To learn the workflow by hand, read
 [`docs/gest_gitbutler_workflow_guide.md`](docs/gest_gitbutler_workflow_guide.md)

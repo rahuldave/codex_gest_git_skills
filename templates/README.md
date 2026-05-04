@@ -12,11 +12,16 @@ with existing project files so local conventions are preserved.
   coverage, and editor/OS files.
 - `env/envrc.local-bin`: `direnv` snippet for adding `.local/bin` to PATH.
 - `env/env.example`: minimal committed `.env.example` placeholder.
+- `env/python-uv.envrc`, `env/typescript-npm.envrc`, `env/go.envrc`, and
+  `env/rust-cargo.envrc`: profile-specific `direnv` environment snippets.
 
 ## Profiles
 
 - `gitignore/python-uv.gitignore` and `just/python-uv.just`
 - `gitignore/typescript-npm.gitignore` and `just/typescript-npm.just`
+- `gitignore/go.gitignore` and `just/go.just`
+- `gitignore/rust-cargo.gitignore` and `just/rust-cargo.just`
+- `rust/rust-toolchain.toml`
 - `gitignore/browser-agent.gitignore` and `just/browser-agent.just`
 - `just/npm-local-cache.just`
 
