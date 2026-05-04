@@ -23,6 +23,8 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
 - `tools/gest_mermaid_graph.py`: optional read-only Gest SQLite exporter that
   writes clickable Mermaid/HTML relationship graphs.
 - `scripts/install.sh`: simple copy-based installer for target repos.
+- `templates/`: composable setup snippets for `.gitignore`, `.envrc`,
+  `.env.example`, and common `Justfile` targets.
 
 ## Install Into A Repo
 
@@ -43,6 +45,8 @@ AGENTS.template.md -> AGENTS.md, only if AGENTS.md does not already exist
 
 Review `AGENTS.md` after installing and replace placeholders such as project
 name, verification commands, and GitHub policy.
+Use `templates/` as `gsu` inputs when creating `.gitignore`, `.envrc`,
+`.env.example`, or `Justfile` command contracts.
 
 For a small setup-first example, read
 [`docs/gsu_typescript_hello_world.md`](docs/gsu_typescript_hello_world.md).

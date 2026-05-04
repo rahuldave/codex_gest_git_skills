@@ -16,6 +16,7 @@ fi
 
 mkdir -p "$target_root/.agents/skills"
 mkdir -p "$target_root/docs"
+mkdir -p "$target_root/templates"
 mkdir -p "$target_root/tools"
 
 for skill in "$source_root"/.agents/skills/g*; do
@@ -28,6 +29,10 @@ for doc in "$source_root"/docs/*.md; do
   [ -f "$doc" ] || continue
   cp "$doc" "$target_root/docs/$(basename "$doc")"
 done
+
+rm -rf "$target_root/templates"
+cp -R "$source_root/templates" "$target_root/templates"
+
 cp "$source_root/tools/gest_mermaid_graph.py" "$target_root/tools/gest_mermaid_graph.py"
 chmod +x "$target_root/tools/gest_mermaid_graph.py"
 

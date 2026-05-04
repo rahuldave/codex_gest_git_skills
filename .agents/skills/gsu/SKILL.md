@@ -48,8 +48,8 @@ Identify which of these concepts apply to the project:
    `Justfile`, `.envrc`, package manifests, lockfiles, CI configs, docs, test
    directories, source directories, and app entrypoints.
 2. Initialize Git or Gest only when missing and after confirming the desired
-   repository root. This repo uses Git-oriented skills; keep jj support in a
-   separate parallel skill repository.
+   repository root. Use `git init` and `gest init --local` for this Git-oriented
+   skill family; keep jj support in a separate parallel skill repository.
 3. Check required workflow executables: `git`, `gest`, and `just`. Treat
    `direnv` as recommended unless the project contract requires it.
 4. Infer likely project profiles from files and user context. Examples:
@@ -62,18 +62,38 @@ Identify which of these concepts apply to the project:
    would change the machine or repository. Prefer one concise question at a
    time.
 6. Create or update ignore rules for generated files, local environments,
-   caches, logs, build artifacts, and project-local tool installs.
-7. Install or sync project dependencies through the chosen package manager when
+   caches, logs, build artifacts, and project-local tool installs. Start from a
+   base ignore snippet, then layer on language/runtime snippets.
+7. Create or update `.env.example`, `.envrc`, and project-local PATH setup when
+   the project uses environment variables or local tool installs.
+8. Install or sync project dependencies through the chosen package manager when
    the user approves.
-8. Define the project command contract in `AGENTS.md`. Map each applicable
+9. Define the project command contract in `AGENTS.md`. Map each applicable
    concept to the command agents should run, including focused arguments.
-9. Create or update the `Justfile` when the project uses `just`. Keep target
+10. Create or update the `Justfile` when the project uses `just`. Keep target
    names stable and let targets call the project-specific tools.
-10. Create or update setup docs, docs/test directory expectations, and
+11. Create or update setup docs, docs/test directory expectations, and
    project-specific invariants in `AGENTS.md`.
-11. Run setup verification: command discovery (`just --list`), the cheapest
+12. Run setup verification: command discovery (`just --list`), the cheapest
    static checks, and targeted commands that prove argument passing works.
-12. Record remaining setup gaps as Gest follow-ups rather than hiding them.
+13. Record remaining setup gaps as Gest follow-ups rather than hiding them.
+
+## Snippet Templates
+
+This repository includes composable snippets under `templates/`. Use them as
+starting points, not as blind overwrites:
+
+- `templates/gitignore/base.gitignore`
+- `templates/gitignore/python-uv.gitignore`
+- `templates/gitignore/typescript-npm.gitignore`
+- `templates/gitignore/browser-agent.gitignore`
+- `templates/env/envrc.local-bin`
+- `templates/env/env.example`
+- `templates/just/*.just`
+
+Every setup should include the base ignore concepts. Add profile snippets only
+when the project needs them. If existing project files already cover the same
+patterns, preserve the local style and avoid duplicate churn.
 
 ## Command Contract
 
@@ -142,7 +162,9 @@ For a simple Node-targeted TypeScript project, a good starting profile is:
 ## Browser Setup
 
 When a project has browser UI, ask the user whether browser-agent checks should
-be part of the command contract. Prefer `npx agent-browser` for a simple
+be part of the command contract. `npx agent-browser install` installs the
+browser runtime used by the CLI; it does not install this repository's Codex
+skill into `.agents/skills`. Prefer `npx agent-browser` for a simple
 project-local/on-demand setup:
 
 ```just
@@ -179,8 +201,23 @@ hiding important source artifacts. Common setup-owned ignores include:
 - project-local tool installs such as `.local/`
 - language caches such as `.ruff_cache/`, `.pytest_cache/`, `node_modules/`,
   `target/`, and build outputs
+- browser-agent local state and artifacts such as `.agent-browser-home/`,
+  `browser-data/`, screenshots, and recordings
 - local secrets such as `.env`
 - generated logs, coverage outputs, and temporary files
+
+## Environment Files
+
+If the project needs environment variables, commit `.env.example` and ignore
+`.env`. Use `.envrc` when the project needs per-repo PATH or environment setup,
+such as exposing `.local/bin`:
+
+```sh
+PATH_add .local/bin
+```
+
+Do not put secrets in `AGENTS.md`, `.envrc`, or committed templates. Document
+variable names and expected purpose in `.env.example` or setup docs.
 
 ## Just Arguments
 

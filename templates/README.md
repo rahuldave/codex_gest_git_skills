@@ -1,0 +1,24 @@
+# Setup Snippets
+
+These snippets are inputs for `gsu`, not files to copy blindly.
+
+Use the base snippets for every repository, then layer on language/runtime
+snippets and browser snippets only when the project needs them. Merge carefully
+with existing project files so local conventions are preserved.
+
+## Baseline
+
+- `gitignore/base.gitignore`: project-local installs, caches, secrets, logs,
+  coverage, and editor/OS files.
+- `env/envrc.local-bin`: `direnv` snippet for adding `.local/bin` to PATH.
+- `env/env.example`: minimal committed `.env.example` placeholder.
+
+## Profiles
+
+- `gitignore/python-uv.gitignore` and `just/python-uv.just`
+- `gitignore/typescript-npm.gitignore` and `just/typescript-npm.just`
+- `gitignore/browser-agent.gitignore` and `just/browser-agent.just`
+- `just/npm-local-cache.just`
+
+`gsu` should record the final command contract in `AGENTS.md` after composing
+or adapting these snippets.
