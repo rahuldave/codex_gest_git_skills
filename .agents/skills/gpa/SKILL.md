@@ -12,6 +12,12 @@ context, merged, or held for changes.
 reviews a pull request as an integration object with GitHub state, branch state,
 checks, review history, and Gest task/artifact context.
 
+`gpa` is mandatory after Codex pushes changes to a branch other than the
+repository's mainline branch. The normal handoff is: create/update the PR, run
+this skill, report the review packet to the user, and ask whether to merge.
+Only merge without another question when the user explicitly asked for that
+merge in the current turn.
+
 ## Inputs
 
 Accept a PR number, URL, or current branch PR. If no PR is provided, discover it:

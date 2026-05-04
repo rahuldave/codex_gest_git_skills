@@ -97,6 +97,12 @@ changes. Before final response for substantial work, inspect
 `git status --short --branch`; if Codex-owned changes remain and one of those
 triggers applies, run `gcm` or record the concrete no-commit reason.
 
+After Codex pushes a branch other than the repository's mainline branch, the
+checkpoint continues through GitHub review: create or update the pull request,
+run `gpa`, report the PR review findings/state to the user, and ask whether to
+merge. Do not merge without explicit user approval unless the user already asked
+for that merge in the current turn.
+
 ## Branch, Stack, And Worktree Policy
 
 For Gest-tracked writes, keep `main` integration-ready and choose both a branch

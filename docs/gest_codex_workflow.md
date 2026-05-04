@@ -320,8 +320,16 @@ commit, inspect `git status --short --branch`; if the branch has an upstream
 and the user has not asked for local-only work, push the verified checkpoint or
 record the exact no-push reason in the task note/final summary. If the branch
 is still `ahead` at handoff, the checkpoint is incomplete unless that no-push
-reason is explicit. For reusable workflow/template repo changes, push is
-required unless blocked.
+reason is explicit.
+
+When Codex pushes changes to a branch other than the repository's mainline
+branch, that push must be followed by a pull-request checkpoint: create or
+update the PR for the branch, run `gpa` on that PR, report the PR review
+findings/state to the user, and ask whether to merge. Only merge without a
+second question when the user explicitly asked for the merge in the current
+turn. For reusable workflow/template repo changes, push and PR creation are
+required unless blocked; record the exact blocker instead of leaving the branch
+only pushed.
 
 Before final response for substantial work, run a dirty-worktree gate for each
 edited repo. A completed Gest task is not a substitute for a Git checkpoint. If
@@ -353,11 +361,14 @@ Checkpoint steps:
    `git status --short --branch`. If an upstream exists and the branch is
    ahead, push it or record the explicit local-only/blocker reason. Report the
    final branch relationship separately from the GitHub issue decision.
-4. For every code change, run an explicit review pass before task completion.
+4. If Codex pushed a non-mainline branch, create/update its PR, run `gpa`,
+   report the PR review findings/state, and ask before merge unless the user
+   already explicitly asked for that merge.
+5. For every code change, run an explicit review pass before task completion.
    Use `grv` or a code-review stance over the current diff/commit, then fix or
    record any findings before closing the leaf, parent, or iteration. Missing
    focused tests for changed callable code or APIs are review findings.
-5. Verify the final Gest status after closing the parent or iteration and report
+6. Verify the final Gest status after closing the parent or iteration and report
    the graph paths, commit hashes, push status, review status, and GitHub issue
    decision.
 

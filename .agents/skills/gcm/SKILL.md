@@ -133,3 +133,11 @@ work. If the branch is ahead and you do not push, record the exact reason in the
 Gest note and final summary. A checkpoint is not complete while a Codex-created
 commit is silently ahead of its upstream. For reusable workflow/template repo
 changes, push is mandatory unless blocked.
+
+After pushing a branch other than the repository's mainline branch, create or
+update the PR for that branch, then route it through `gpa`. Report the `gpa`
+review findings/state to the user and ask whether to merge. Only merge without
+another question when the user explicitly asked for that merge in the current
+turn. For reusable workflow/template repo changes, PR creation is mandatory
+after push unless blocked; record the exact blocker instead of leaving only a
+pushed branch.
