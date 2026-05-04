@@ -5,6 +5,9 @@ Codex/Gest skills installed. Use these commands in natural language, for
 example `/gtw fix the search bug`, `$gtw plan annotation import`, or
 `gcm: commit the verified slice`.
 
+For the longer explanation and a hands-on reproduction lab, read
+[`gest_gitbutler_workflow_guide.md`](gest_gitbutler_workflow_guide.md).
+
 ## Start Here: `/gtw`
 
 `/gtw` means **Gest Track Work**. It is the normal entry point for substantial
@@ -162,6 +165,13 @@ intended branch or stack afterward.
 In GitButler-managed mode, Codex should write with `but` commands such as
 `but branch new`, `but stage`, `but commit`, `but push`, and `but pr`, not raw
 `git commit`, `git switch`, `git checkout`, or branch-mutating git commands.
+
+The full guide includes a disposable-repo lab that repeats these flows:
+
+- GitButler plain branch
+- multi-commit session branch
+- GitButler stacked base/child branches
+- physical git worktrees integrated by rebase and fast-forward
 
 ## Naming Notes
 

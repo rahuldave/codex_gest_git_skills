@@ -16,6 +16,8 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
 - `docs/gest_codex_workflow.md`: the full workflow playbook.
 - `docs/g_commands_cheatsheet.md`: quick user-facing guide to `/gtw` and the
   other g-command skills.
+- `docs/gest_gitbutler_workflow_guide.md`: user-facing setup and practice guide
+  for Gest, the g skills, GitButler stacks, and physical worktrees.
 - `tools/gest_mermaid_graph.py`: optional read-only Gest SQLite exporter that
   writes clickable Mermaid/HTML relationship graphs.
 - `scripts/install.sh`: simple copy-based installer for target repos.
@@ -32,13 +34,19 @@ The installer copies:
 
 ```text
 .agents/skills/g*
-docs/gest_codex_workflow.md
+docs/*.md
 tools/gest_mermaid_graph.py
 AGENTS.template.md -> AGENTS.md, only if AGENTS.md does not already exist
 ```
 
 Review `AGENTS.md` after installing and replace placeholders such as project
 name, verification commands, and GitHub policy.
+
+To learn the workflow by hand, read
+[`docs/gest_gitbutler_workflow_guide.md`](docs/gest_gitbutler_workflow_guide.md)
+and run its disposable-repo lab. It walks through Gest setup, skill
+responsibilities, branch/stack/worktree decisions, GitButler sequential stack
+practice, and physical worktree integration.
 
 ## Workflow Shape
 
