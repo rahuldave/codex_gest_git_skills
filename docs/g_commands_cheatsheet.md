@@ -51,6 +51,7 @@ A good default prompt is:
 | `gfm` | Gest Format | Formatting, linting, typechecking, static checks, or mechanical fixes are needed. |
 | `gte` | Gest Test | Unit, API regression, smoke, regression, or integration tests are needed. |
 | `gdo` | Gest Docs | User-facing, developer-facing, or in-code docs need to be checked and updated. |
+| `gpa` | Gest PR Accept | A GitHub PR needs review, Gest context, approval/merge guidance, or post-merge bookkeeping. |
 | `gcm` | Gest Commit | A verified checkpoint should be committed with an appropriate message. |
 
 ## Quick Decision Guide
@@ -69,6 +70,8 @@ know the stage you want.
 - Use `gfm` when you want mechanical checks and fixes.
 - Use `gte` when you want behavioral tests run or added.
 - Use `gdo` when docs or code documentation may need to be created or updated.
+- Use `gpa` when a pull request should be reviewed as a Gest-tracked
+  workstream before approval or merge.
 - Use `gcm` when the work has reached a verified commit checkpoint.
 
 ## Typical Flows
@@ -119,6 +122,18 @@ Likely path:
 
 ```text
 grv -> findings first -> open questions -> brief summary
+```
+
+### Pull Request Acceptance
+
+```text
+gpa: review PR #12 and add missing Gest context
+```
+
+Likely path:
+
+```text
+gpa -> gh pr view/diff/checks -> Gest task/artifact lookup -> PR findings -> human checklist -> optional PR body update -> approve/merge recommendation
 ```
 
 ## Commit And Checkpoint Habits

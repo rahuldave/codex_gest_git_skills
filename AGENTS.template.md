@@ -124,6 +124,11 @@ task. Treat missing focused tests for changed callable code or APIs as review
 findings. Report graph paths, commit hashes, push status, review status, and
 the GitHub issue decision.
 
+When a Gest-tracked branch becomes a pull request, use `gpa` to review the PR as
+an integration checkpoint before approval or merge. The PR should include a Gest
+context appendix with parent task, leaf tasks, iteration, artifacts/specs,
+verification, follow-ups, and graph links when that context is safe to expose.
+
 ## Verification
 
 Replace with project commands, for example:

@@ -519,6 +519,8 @@ User-invoked Gest skills use three-letter names beginning with `g`.
 - `gte`: Gest Test. Run unit, regression, smoke, API, and integration tests.
 - `gdo`: Gest Docs. Check, create, update, and verify user-facing,
   developer-facing, and in-code docs affected by the task.
+- `gpa`: Gest PR Accept. Review and accept GitHub pull requests as the
+  GitHub-facing checkpoint of Gest-tracked workstreams.
 - `gcm`: Gest Commit. Create a Git commit tied to GitHub metadata when present.
 
 Optional later skills:
@@ -636,6 +638,15 @@ Check whether user-facing docs, developer-facing docs, or in-code docs are
 needed, then create or update them. Prefer documented and typed code when it
 clarifies callable behavior, public contracts, non-obvious domain logic, or
 future maintenance.
+
+### GPA
+
+Review a GitHub pull request as an integration checkpoint. Gather PR metadata,
+diff, commits, checks, review state, mergeability, branch state, and related
+Gest tasks/artifacts/iterations. Produce findings first, then a Gest context
+appendix, human review checklist, merge recommendation, and post-merge
+bookkeeping plan. If the PR body lacks Gest context, offer to update it before
+approval or merge.
 
 ### GCM
 

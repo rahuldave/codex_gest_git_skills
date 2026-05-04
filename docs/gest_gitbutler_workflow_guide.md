@@ -76,6 +76,7 @@ The full set:
 | `gte` | Run or add behavioral tests, smoke checks, and integration checks. |
 | `gdo` | Audit and update docs. |
 | `grv` | Review the changeset for bugs, regressions, safety, and missing tests. |
+| `gpa` | Review/accept a GitHub PR with PR state, Gest context, and merge guidance. |
 | `gcm` | Commit a verified checkpoint with an appropriate message. |
 
 The skills are not shell commands. They are local instructions for Codex. You
@@ -599,5 +600,46 @@ files and can be integrated afterward
 gcm: commit this verified checkpoint and push if the branch has an upstream
 ```
 
+```text
+gpa: review PR #12, add missing Gest context to the body, and recommend whether
+to merge
+```
+
 When in doubt, ask Codex to explain the proposed branch model and execution
 model before it edits files.
+
+## PR Acceptance With Gest Context
+
+Use `gpa` when a branch has become a GitHub pull request. A PR is the
+GitHub-facing checkpoint of a Gest-tracked workstream, so it should carry enough
+Gest context for a human to review it without reconstructing the chat.
+
+`gpa` should gather:
+
+- PR title, body, branch, base, mergeability, checks, commits, and files
+- PR diff
+- review state
+- related Gest parent tasks, leaves, artifacts/specs, iterations, notes, and
+  metadata
+- graph links generated at checkpoints
+
+The PR review packet should include:
+
+```markdown
+## Gest Context
+
+- Parent: `<id>` <title>
+- Leaves:
+  - `<id>` <title>
+- Iteration: `<id>` <title>
+- Artifacts/specs: <none or list>
+- Verification: <commands/checks>
+- Follow-ups: <none or list>
+- Graphs:
+  - overall: <path-or-url>
+  - focused: <path-or-url>
+```
+
+If the PR body lacks this appendix, ask Codex to update it with `gh pr edit`.
+For public repos, keep the PR body sanitized and store private details in Gest
+notes instead.
