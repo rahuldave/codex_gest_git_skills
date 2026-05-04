@@ -28,10 +28,19 @@ history.
 ## Workflow
 
 1. Identify changed behavior and the smallest meaningful test layer.
-2. Add or update tests for changed inner functions and APIs when coverage is
+2. Search Gest for prior failures, browser-agent audits, smoke-check findings,
+   and unresolved follow-ups in the touched area:
+
+```bash
+gest search "<feature/module> test" --all --json --limit 20
+gest search "browser audit <feature/module>" --all --json --limit 20
+gest search "Follow-up <feature/module>" --all --json --limit 20
+```
+
+3. Add or update tests for changed inner functions and APIs when coverage is
    missing.
-3. Run the relevant focused tests first.
-4. Run the broader project test suite.
-5. Run smoke checks when they exercise cross-system wiring.
-6. Run integration/browser checks for frontend, UI, or interaction changes.
-7. Report commands and results. If a layer cannot run, say exactly why.
+4. Run the relevant focused tests first.
+5. Run the broader project test suite.
+6. Run smoke checks when they exercise cross-system wiring.
+7. Run integration/browser checks for frontend, UI, or interaction changes.
+8. Report commands and results. If a layer cannot run, say exactly why.

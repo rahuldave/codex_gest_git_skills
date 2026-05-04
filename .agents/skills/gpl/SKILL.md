@@ -12,6 +12,22 @@ Use to convert a spec or outline task into executable Gest structure.
 Accept a Gest artifact ID, task ID, GitHub issue URL/number, or user-described
 scope. Read the entity with `gest ... show --json` when possible.
 
+## Gest Memory
+
+Before decomposing work, search Gest for existing parents, sibling tasks,
+follow-ups, and related iterations:
+
+```bash
+gest search "<scope/topic>" --all --json --limit 20
+gest search "Follow-up <scope/topic>" --all --json --limit 20
+gest task show <id-or-prefix> --json
+gest task note list <id-or-prefix> --json
+gest iteration show <id-or-prefix> --json
+```
+
+Reuse existing durable parents when they fit. Prefer linking new leaves into
+the existing tree over creating a duplicate outline area.
+
 ## Decisions
 
 1. Is this a session plan or development plan?

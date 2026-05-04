@@ -13,6 +13,20 @@ Create a spec when behavior is unclear, there are meaningful trade-offs,
 acceptance criteria need negotiation, multiple systems are affected, or GitHub
 visible development is likely.
 
+## Gest Memory
+
+Before drafting or updating a spec, search Gest for related specs, tasks,
+iterations, prior decisions, and follow-ups:
+
+```bash
+gest search "<spec topic>" --all --json --limit 20
+gest search "<affected feature/module>" --all --json --limit 20
+```
+
+Inspect relevant hits with `gest task show`, `gest task note list`, and
+`gest iteration show`. Include durable references in the spec's `References`
+section when they shape the proposal.
+
 ## Spec Shape
 
 ```markdown

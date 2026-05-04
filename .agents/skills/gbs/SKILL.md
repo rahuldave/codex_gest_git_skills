@@ -9,7 +9,9 @@ Use when the user has a rough idea, fuzzy feature, or exploratory direction.
 
 ## Workflow
 
-1. Inspect local code, docs, and Gest state relevant to the idea.
+1. Inspect local code, docs, and Gest memory relevant to the idea. Use targeted
+   `gest search "<topic>" --all --json --limit 20`, then inspect likely hits
+   with `gest task show`, `gest task note list`, or `gest iteration show`.
 2. Identify existing patterns, constraints, risks, and open questions.
 3. Ask clarifying questions one at a time when needed.
 4. Propose 2-3 approaches with trade-offs.
@@ -25,3 +27,6 @@ Use when the user has a rough idea, fuzzy feature, or exploratory direction.
 Brainstorming itself can be tracked as a session leaf when it is part of a
 larger workflow. Do not create implementation tasks until the desired behavior
 is clear enough to write acceptance criteria.
+
+Use Gest notes to recover prior decisions, rejected approaches, browser-audit
+findings, and unresolved follow-ups before recommending a path.

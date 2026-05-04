@@ -56,6 +56,36 @@ gest iteration list --all --json
 If Gest is unavailable in the current directory, run from the repository root or
 initialize the project with `gest init --local`.
 
+## Gest Memory Lookup
+
+Treat Gest as the durable project memory for substantial work. Before planning
+or editing, run targeted searches for prior context and inspect the most
+relevant hits.
+
+Start narrow:
+
+```bash
+gest search "<feature or symptom>" --all --json --limit 20
+gest search "<module/script/book name>" --all --json --limit 20
+gest search "browser audit <topic>" --all --json --limit 20
+gest search "Follow-up <topic>" --all --json --limit 20
+```
+
+Then inspect promising entities:
+
+```bash
+gest task show <id-or-prefix> --json
+gest task note list <id-or-prefix> --json
+gest iteration show <id-or-prefix> --json
+gest iteration graph <id-or-prefix> --raw
+```
+
+Look especially for completion notes with `Done` / `Verification` /
+`Follow-up`, browser-agent audit notes, unresolved follow-ups, GitHub metadata,
+prior design decisions, rejected approaches, related iterations, and parent task
+trees. Do not bulk-load the whole database unless targeted search fails or the
+user asks for an audit.
+
 ## Classification
 
 Choose one:

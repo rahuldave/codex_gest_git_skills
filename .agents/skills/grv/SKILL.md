@@ -19,6 +19,15 @@ git diff --staged
 
 If reviewing a commit, diff that commit directly.
 
+Search Gest for prior regressions, review findings, and browser/test notes in
+the touched area:
+
+```bash
+gest search "<module/feature> regression" --all --json --limit 20
+gest search "<module/feature> review" --all --json --limit 20
+gest search "Follow-up <module/feature>" --all --json --limit 20
+```
+
 Report findings first, ordered by severity, with file/line references. Focus on
 bugs, behavioral regressions, safety, error handling, and missing tests. If no
 issues are found, say so and mention residual risk or test gaps.
