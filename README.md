@@ -16,6 +16,8 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
 - `docs/gest_codex_workflow.md`: the full workflow playbook.
 - `docs/g_commands_cheatsheet.md`: quick user-facing guide to `/gtw` and the
   other g-command skills.
+- `docs/gsu_typescript_hello_world.md`: disposable setup lab for a tiny
+  TypeScript project using `gsu` concepts and `just` command contracts.
 - `docs/gest_gitbutler_workflow_guide.md`: user-facing setup and practice guide
   for Gest, the g skills, GitButler stacks, and physical worktrees.
 - `tools/gest_mermaid_graph.py`: optional read-only Gest SQLite exporter that
@@ -41,6 +43,9 @@ AGENTS.template.md -> AGENTS.md, only if AGENTS.md does not already exist
 
 Review `AGENTS.md` after installing and replace placeholders such as project
 name, verification commands, and GitHub policy.
+
+For a small setup-first example, read
+[`docs/gsu_typescript_hello_world.md`](docs/gsu_typescript_hello_world.md).
 
 To learn the workflow by hand, read
 [`docs/gest_gitbutler_workflow_guide.md`](docs/gest_gitbutler_workflow_guide.md)

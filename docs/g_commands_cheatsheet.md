@@ -5,7 +5,9 @@ Codex/Gest skills installed. Use these commands in natural language, for
 example `/gtw fix the search bug`, `$gtw plan annotation import`, or
 `gcm: commit the verified slice`.
 
-For the longer explanation and a hands-on reproduction lab, read
+For a setup-focused TypeScript hello-world lab, read
+[`gsu_typescript_hello_world.md`](gsu_typescript_hello_world.md). For the longer
+explanation and hands-on Git/GitButler reproduction lab, read
 [`gest_gitbutler_workflow_guide.md`](gest_gitbutler_workflow_guide.md).
 
 ## Start Here: `/gtw`

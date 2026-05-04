@@ -325,8 +325,11 @@ finish each worktree, rebase if needed, integrate intentionally, then clean up
 
 ## Reproduce The Workflow Lab
 
-This lab creates a disposable repository and exercises the supported modes.
-It intentionally avoids concurrent GitButler parallel lanes.
+This lab creates a disposable repository, bootstraps a small TypeScript command
+contract, and then exercises the supported branch/worktree modes. It
+intentionally avoids concurrent GitButler parallel lanes. For the full
+setup-only version of the TypeScript project, see
+[`gsu_typescript_hello_world.md`](gsu_typescript_hello_world.md).
 
 Set paths:
 
@@ -334,7 +337,7 @@ Set paths:
 skills_repo=/path/to/codex_gest_git_skills
 lab=/tmp/gest-gitbutler-workflow-lab
 rm -rf "$lab" "$lab-wt-a" "$lab-wt-b"
-mkdir -p "$lab"
+mkdir -p "$lab/src"
 cd "$lab"
 ```
 
@@ -345,8 +348,46 @@ git init -b main
 git config user.name "workflow-test"
 git config user.email "workflow-test@example.invalid"
 printf '# Workflow Lab\n' > README.md
-printf 'base\n' > app.txt
-git add README.md app.txt
+cat > package.json <<'JSON'
+{
+  "name": "gest-gitbutler-workflow-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.14",
+    "@types/node": "^25.0.0",
+    "typescript": "^5.9.3"
+  }
+}
+JSON
+cat > tsconfig.json <<'JSON'
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "target": "ES2022"
+  },
+  "include": ["src/**/*.ts"]
+}
+JSON
+cat > src/index.ts <<'TS'
+export function greet(name = "world"): string {
+  return `Hello, ${name}!`;
+}
+
+console.log(greet());
+TS
+cat > .gitignore <<'GITIGNORE'
+node_modules/
+dist/
+.local/
+.DS_Store
+GITIGNORE
+git add README.md package.json tsconfig.json src/index.ts .gitignore
 git commit -m "chore: initialize workflow lab"
 ```
 
@@ -354,8 +395,61 @@ Install the skills:
 
 ```bash
 "$skills_repo/scripts/install.sh" "$lab"
-git add .agents AGENTS.md docs tools
-git commit -m "chore: install gest codex skills"
+cat > Justfile <<'JUST'
+export npm_config_cache := ".local/npm-cache"
+
+setup:
+  npm install
+
+lint path="src package.json tsconfig.json":
+  npm exec -- biome check {{path}}
+
+typecheck:
+  npm exec -- tsc --noEmit
+
+build:
+  npm exec -- tsc
+
+smoke:
+  npm exec -- tsc
+  node dist/index.js
+
+verify:
+  just lint
+  just typecheck
+  just build
+  just smoke
+  git diff --check
+JUST
+cat >> AGENTS.md <<'MD'
+
+## Lab Command Contract
+
+Use the `Justfile` as the stable command interface:
+
+```bash
+just setup
+just lint [path]
+just typecheck
+just build
+just smoke
+just verify
+git diff --check
+```
+
+Mappings:
+
+- Setup: `just setup`, which runs `npm install` with `.local/npm-cache`.
+- Lint: `just lint [path]`, which runs Biome check.
+- Typecheck: `just typecheck`, which runs `tsc --noEmit`.
+- Build: `just build`, which runs `tsc`.
+- Smoke: `just smoke`, which compiles then runs the hello-world program.
+- Full verification: `just verify`.
+MD
+git add .agents AGENTS.md docs tools Justfile
+git commit -m "chore: install gest codex skills and command contract"
+just setup
+just verify
 ```
 
 ### Flow 1: GitButler Plain Branch

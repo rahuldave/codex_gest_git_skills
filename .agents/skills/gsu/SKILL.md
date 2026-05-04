@@ -117,6 +117,26 @@ Do not silently rely on ambient global tools when the project contract says a
 local toolchain is required. If installation needs network or writes outside
 the sandbox, request approval and explain the tool being installed.
 
+For npm projects, prefer a project-local cache when the user wants explicit
+per-project tooling or the global npm cache is unreliable:
+
+```just
+export npm_config_cache := ".local/npm-cache"
+```
+
+## Profile Notes
+
+For a simple Node-targeted TypeScript project, a good starting profile is:
+
+- package manager: `npm` unless another lockfile is present
+- formatter/linter: Biome for a small single-tool default, or the project's
+  existing ESLint/Prettier setup
+- typecheck/build: TypeScript
+- tests: Node's built-in `node:test` for tiny projects, or the detected test
+  runner for existing projects
+- dev dependencies: `typescript`, `@types/node`, and the chosen formatter/linter
+- lint defaults: source and config files, not generated outputs such as `dist/`
+
 ## Ignore Rules
 
 When creating or refreshing `.gitignore`, cover the project profile without
