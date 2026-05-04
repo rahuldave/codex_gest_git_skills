@@ -1,0 +1,207 @@
+---
+name: gpa
+description: Gest PR Accept. Review and accept a GitHub pull request as the GitHub-facing checkpoint of a Gest-tracked workstream, including PR metadata, diff review, checks, Gest context, merge recommendation, and post-merge bookkeeping.
+---
+
+# GPA: Gest PR Accept
+
+Use when a GitHub pull request should be reviewed, approved, updated with Gest
+context, merged, or held for changes.
+
+`gpa` is different from `grv`: `grv` reviews a local diff or commit. `gpa`
+reviews a pull request as an integration object with GitHub state, branch state,
+checks, review history, and Gest task/artifact context.
+
+## Inputs
+
+Accept a PR number, URL, or current branch PR. If no PR is provided, discover it:
+
+```bash
+gh pr status
+gh pr view --json number,url,title,headRefName,baseRefName,state
+```
+
+## Gather PR State
+
+Inspect the PR before reviewing:
+
+```bash
+gh pr view <pr> --json \
+  number,url,state,isDraft,title,body,author,headRefName,baseRefName,mergeable,reviewDecision,labels,commits,files,statusCheckRollup,latestReviews
+
+gh pr diff <pr> --patch
+gh pr checks <pr>
+git status --short --branch
+git log --oneline --decorate --graph --max-count=20
+```
+
+If GitButler is managing the checkout, also inspect:
+
+```bash
+but status
+but branch list --all
+```
+
+## Gather Gest Context
+
+Find Gest work related to the PR:
+
+```bash
+gest search "<pr title or branch>" --all --json --limit 20
+gest search "<pr url>" --all --json --limit 20
+gest task list --all --json
+gest iteration list --all --json
+```
+
+Inspect likely parent and leaf tasks:
+
+```bash
+gest task show <task-id> --json
+gest task note list <task-id> --json
+gest iteration status <iteration-id> --json
+gest iteration graph <iteration-id>
+```
+
+Look for:
+
+- parent task and leaf tasks
+- linked specs/artifacts
+- iteration id and status
+- completion notes with `Done`, `Verification`, and `Follow-up`
+- `github.issue`, `github.url`, `github.pr`, `github.pr_url`
+- `vcs.*` metadata such as branch mode, execution mode, workspace path, and
+  integration method
+- checkpoint graph paths
+
+## Review
+
+Produce findings first, as in `grv`. Review both code/docs behavior and PR
+workflow safety:
+
+- correctness, regressions, safety, error handling
+- missing or insufficient tests
+- docs drift
+- installer or setup impact
+- CI/check failures
+- PR body mismatch with actual diff
+- missing Gest context in the PR body
+- missing task completion notes
+- unsafe merge method for the branch model
+- silent unpushed branches or dirty local worktrees
+- GitButler violations such as raw git writes in GitButler mode or shared
+  GitButler workspace parallelism
+
+If there are no findings, say so clearly and list residual risk.
+
+## Acceptance Packet
+
+Present a compact packet before any approval or merge:
+
+```markdown
+## Codex PR Review
+
+Findings:
+- None / <findings ordered by severity>
+
+PR State:
+- PR: <url>
+- Branch: <head> -> <base>
+- Mergeability:
+- Checks:
+- Review decision:
+
+Gest Context:
+- Parent task:
+- Leaf tasks:
+- Iteration:
+- Artifacts/specs:
+- Completion notes:
+- Verification notes:
+- Follow-ups:
+- GitHub metadata:
+- Graph links:
+
+Human Checklist:
+- <what the user should inspect manually>
+
+Recommendation:
+- approve/request changes/hold
+- merge method: merge/squash/rebase
+- post-merge steps
+```
+
+## Gest Context Appendix
+
+Every PR for Gest-tracked work should include a Gest context appendix unless the
+repo is public and the context is too internal. Prefer a concise sanitized
+version in GitHub and full details in Gest notes.
+
+Suggested PR body section:
+
+```markdown
+## Gest Context
+
+- Parent: `<id>` <title>
+- Leaves:
+  - `<id>` <title>
+- Iteration: `<id>` <title>
+- Artifacts/specs: <none or list>
+- Verification: <commands/checks>
+- Follow-ups: <none or list>
+- Graphs:
+  - overall: <path-or-url>
+  - focused: <path-or-url>
+```
+
+If the PR body lacks this context, offer to update it:
+
+```bash
+gh pr edit <pr> --body-file <file>
+```
+
+## Safe Actions
+
+Ask before approving, requesting changes, or merging unless the user explicitly
+asked you to perform that action.
+
+Possible actions:
+
+```bash
+gh pr checkout <pr>
+gh pr review <pr> --approve --body-file <file>
+gh pr review <pr> --request-changes --body-file <file>
+gh pr review <pr> --comment --body-file <file>
+gh pr merge <pr> --merge --delete-branch
+gh pr merge <pr> --squash --delete-branch
+gh pr merge <pr> --rebase --delete-branch
+```
+
+After merging:
+
+1. Verify local branch state:
+
+```bash
+git fetch --all --prune
+git checkout <base>
+git pull --ff-only
+git status --short --branch
+```
+
+2. Add a Gest note to the parent and relevant leaf:
+
+```text
+Done: PR <url> merged with <method>. Merge commit: <sha>.
+Verification: <checks reviewed or run>.
+Follow-up: <real residual issue only>.
+```
+
+3. Store metadata when useful:
+
+```bash
+gest task meta set <task-id> github.pr <number>
+gest task meta set <task-id> github.pr_url <url>
+gest task meta set <task-id> github.merge_method <method>
+gest task meta set <task-id> github.merged_commit <sha>
+```
+
+4. Regenerate checkpoint graphs for durable workflow changes.

@@ -24,7 +24,10 @@ for skill in "$source_root"/.agents/skills/g*; do
   cp -R "$skill" "$target_root/.agents/skills/"
 done
 
-cp "$source_root/docs/gest_codex_workflow.md" "$target_root/docs/gest_codex_workflow.md"
+for doc in "$source_root"/docs/*.md; do
+  [ -f "$doc" ] || continue
+  cp "$doc" "$target_root/docs/$(basename "$doc")"
+done
 cp "$source_root/tools/gest_mermaid_graph.py" "$target_root/tools/gest_mermaid_graph.py"
 chmod +x "$target_root/tools/gest_mermaid_graph.py"
 
@@ -35,4 +38,3 @@ else
 fi
 
 echo "installed Codex/Gest/Git skills into $target_root"
-

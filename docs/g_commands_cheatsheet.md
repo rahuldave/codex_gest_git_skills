@@ -5,6 +5,9 @@ Codex/Gest skills installed. Use these commands in natural language, for
 example `/gtw fix the search bug`, `$gtw plan annotation import`, or
 `gcm: commit the verified slice`.
 
+For the longer explanation and a hands-on reproduction lab, read
+[`gest_gitbutler_workflow_guide.md`](gest_gitbutler_workflow_guide.md).
+
 ## Start Here: `/gtw`
 
 `/gtw` means **Gest Track Work**. It is the normal entry point for substantial
@@ -48,6 +51,7 @@ A good default prompt is:
 | `gfm` | Gest Format | Formatting, linting, typechecking, static checks, or mechanical fixes are needed. |
 | `gte` | Gest Test | Unit, API regression, smoke, regression, or integration tests are needed. |
 | `gdo` | Gest Docs | User-facing, developer-facing, or in-code docs need to be checked and updated. |
+| `gpa` | Gest PR Accept | A GitHub PR needs review, Gest context, approval/merge guidance, or post-merge bookkeeping. |
 | `gcm` | Gest Commit | A verified checkpoint should be committed with an appropriate message. |
 
 ## Quick Decision Guide
@@ -66,6 +70,8 @@ know the stage you want.
 - Use `gfm` when you want mechanical checks and fixes.
 - Use `gte` when you want behavioral tests run or added.
 - Use `gdo` when docs or code documentation may need to be created or updated.
+- Use `gpa` when a pull request should be reviewed as a Gest-tracked
+  workstream before approval or merge.
 - Use `gcm` when the work has reached a verified commit checkpoint.
 
 ## Typical Flows
@@ -118,6 +124,18 @@ Likely path:
 grv -> findings first -> open questions -> brief summary
 ```
 
+### Pull Request Acceptance
+
+```text
+gpa: review PR #12 and add missing Gest context
+```
+
+Likely path:
+
+```text
+gpa -> gh pr view/diff/checks -> Gest task/artifact lookup -> PR findings -> human checklist -> optional PR body update -> approve/merge recommendation
+```
+
 ## Commit And Checkpoint Habits
 
 For development work, Codex should not wait until a whole large feature is done
@@ -162,6 +180,13 @@ intended branch or stack afterward.
 In GitButler-managed mode, Codex should write with `but` commands such as
 `but branch new`, `but stage`, `but commit`, `but push`, and `but pr`, not raw
 `git commit`, `git switch`, `git checkout`, or branch-mutating git commands.
+
+The full guide includes a disposable-repo lab that repeats these flows:
+
+- GitButler plain branch
+- multi-commit session branch
+- GitButler stacked base/child branches
+- physical git worktrees integrated by rebase and fast-forward
 
 ## Naming Notes
 
