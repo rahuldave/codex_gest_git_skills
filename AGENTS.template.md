@@ -54,6 +54,16 @@ Session work should not commit every small leaf by default. Commit when the user
 asks, when a coherent checkpoint helps, or when a long-lived parent/subtree
 reaches a stable point.
 
+Session classification alone is not a reason to skip `gcm`. A verified slice is
+a commit-required checkpoint when it changes deployment/runtime configuration,
+persistence, migrations, schemas, public APIs, user-visible UI, reusable
+workflow material, publishable docs/templates, or a non-trivial multi-file
+changeset. After verification and review, run `git status --short --branch`
+before final response. If it shows Codex-owned changes and a commit-required
+trigger applies, route through `gcm` before completing the handoff. If `gcm` is
+intentionally skipped despite a dirty worktree, record the concrete no-commit
+reason in the Gest note and final response.
+
 Development work should commit at verified durable checkpoints such as a
 completed depth-1 workstream, coherent depth-2 implementation subtree, handoff,
 risky bug/migration fix, or GitHub issue/PR sync.

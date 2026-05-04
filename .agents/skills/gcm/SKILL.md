@@ -5,8 +5,9 @@ description: Gest Commit. Create a Git commit for the current changes, using con
 
 # GCM: Gest Commit
 
-Use when the user asks to commit, or when the Gest workflow says a verified
-development checkpoint should be committed.
+Use when the user asks to commit, when the Gest workflow says a verified
+development checkpoint should be committed, or when the final dirty-worktree
+gate finds verified Codex-owned changes at a commit-required checkpoint.
 
 Committing is VCS hygiene, not a Gest task by itself. Do not create a Gest task
 whose only purpose is making a normal commit.
@@ -14,6 +15,12 @@ whose only purpose is making a normal commit.
 Session-mode work does not auto-commit every small leaf. Prefer committing when
 the user asks, when a coherent checkpoint would help, or when a long-lived
 parent/subtree reaches a stable point.
+
+Session-mode work must still use `gcm` for commit-required checkpoints:
+deployment/runtime configuration, persistence, migrations, schemas, public APIs,
+user-visible UI, reusable workflow material, publishable docs/templates, and
+non-trivial multi-file verified changes. Do not treat "session leaf" as a
+standalone no-commit reason.
 
 Development-mode work should be committed at durable checkpoints: after a
 verified depth-1 workstream or coherent depth-2 implementation subtree, before
@@ -72,6 +79,12 @@ is ambiguous, risky, or outside the workflow's durable-checkpoint rules. If the
 user has asked you to manage commits or the workflow clearly says the verified
 development slice should be committed, proceed. Stage explicit files rather
 than using `git add .`.
+
+Before returning final after substantial work, inspect `git status --short
+--branch`. If it shows Codex-owned changes and a commit-required trigger
+applies, this skill should run before final response. If a dirty worktree is
+left intentionally, the final response and Gest note must state the exact
+reason the changes were not committed.
 
 After committing:
 

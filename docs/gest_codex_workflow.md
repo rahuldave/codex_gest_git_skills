@@ -187,6 +187,16 @@ when the user asks, when a coherent checkpoint would be useful, or when a
 long-lived parent/subtree reaches a stable point. Small exploratory tasks may
 stay uncommitted while the workflow is still moving.
 
+Session classification alone is not a sufficient reason to skip `gcm`. A
+verified slice is a commit-required checkpoint when it changes
+deployment/runtime configuration, persistence, migrations, schemas, public APIs,
+user-visible UI, reusable workflow material, publishable docs/templates, or a
+non-trivial multi-file changeset. After verification and review, run
+`git status --short --branch` before final response. If it shows Codex-owned
+changes and any commit-required trigger applies, route through `gcm` before
+handoff. If the worktree stays dirty intentionally, record the concrete
+no-commit reason in the Gest note and final response.
+
 Development-mode work should have stronger commit checkpoints:
 
 - after a depth-1 feature/workstream or coherent depth-2 implementation subtree
@@ -225,6 +235,11 @@ record the exact no-push reason in the task note/final summary. If the branch
 is still `ahead` at handoff, the checkpoint is incomplete unless that no-push
 reason is explicit. For reusable workflow/template repo changes, push is
 required unless blocked.
+
+Before final response for substantial work, run a dirty-worktree gate for each
+edited repo. A completed Gest task is not a substitute for a Git checkpoint. If
+there are Codex-owned changes and a commit-required checkpoint trigger applies,
+run `gcm` or explicitly document why no commit is being made.
 
 ## Checkpoint Hygiene
 

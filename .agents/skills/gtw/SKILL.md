@@ -176,6 +176,16 @@ Session work does not auto-commit every small leaf. Commit when the user asks,
 when there is a coherent checkpoint, or when a long-lived parent/subtree reaches
 a stable point.
 
+Session classification alone is not a reason to skip `gcm`. A verified slice is
+a commit-required checkpoint when it changes deployment/runtime configuration,
+persistence, migrations, schemas, public APIs, user-visible UI, reusable
+workflow material, publishable docs/templates, or a non-trivial multi-file
+changeset. After verification and review, run `git status --short --branch`
+before final response. If it shows Codex-owned changes and a commit-required
+trigger applies, route through `gcm` before completing the handoff. If `gcm` is
+intentionally skipped despite a dirty worktree, record the concrete no-commit
+reason in the Gest note and final response.
+
 Development work should be committed at verified durable checkpoints: after a
 depth-1 workstream or coherent depth-2 subtree, before switching product areas,
 before handoff, after risky bug/migration work, or before GitHub issue/PR sync.
@@ -238,6 +248,12 @@ machine-queryable facts, not prose summaries.
 
 Update parent notes/status when useful, but leave outline parents open unless
 the whole subtree is done.
+
+Before final response for any substantial task, perform a dirty-worktree gate:
+`git status --short --branch` for every repo you edited. If a repo has
+Codex-owned changes and any commit-required checkpoint trigger applies, do not
+finalize yet; run `gcm` or record a specific no-commit reason. A completed Gest
+leaf is not a substitute for a Git checkpoint.
 
 Final responses should include relevant Gest IDs, files changed, verification
 commands/results, and any GitHub issue URL.

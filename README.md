@@ -62,7 +62,12 @@ gest task complete <task-id> --quiet
 
 Committing is VCS hygiene, not a Gest task by itself. Session work does not
 auto-commit every small leaf. Development work should commit at verified durable
-checkpoints.
+checkpoints. Session classification alone is not a reason to skip `gcm` for
+deployment/runtime config, persistence, public API, user-visible UI, reusable
+workflow/template changes, publishable docs, or non-trivial multi-file verified
+changes. Before final response for substantial work, inspect
+`git status --short --branch`; if Codex-owned changes remain and one of those
+triggers applies, run `gcm` or record the concrete no-commit reason.
 
 ## Publishing This Repo
 
