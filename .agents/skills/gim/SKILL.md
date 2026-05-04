@@ -26,11 +26,15 @@ Use for one concrete implementable Gest task.
 9. Run `gte` for focused unit/API regression tests, smoke checks, and
    integration/browser checks appropriate to the changed behavior. Any changed
    callable code needs tests; smoke checks alone are not enough.
-10. Run `gdo` when user docs, developer docs, workflow docs, examples, or command
+10. For frontend/browser UI changes, run a browser spot check before handoff:
+   inspect the actual page, exercise the changed interaction, and record what
+   was checked. If the flow should be repeated, add or capture a follow-up for a
+   durable integration test.
+11. Run `gdo` when user docs, developer docs, workflow docs, examples, or command
    references are affected.
-11. Run `grv` after every code change, even for quick development without a pull
+12. Run `grv` after every code change, even for quick development without a pull
    request. Fix or record findings before completion.
-12. For non-trivial leaf tasks, add a completion note before completion. Preserve
+13. For non-trivial leaf tasks, add a completion note before completion. Preserve
    the task description as intent; record what actually happened in the note:
 
 ```bash
@@ -40,7 +44,7 @@ gest task note add <id> --agent codex --body "Done: ...\nVerification: ...\nFoll
 Use `Done` and `Verification` in every completion note. Add `Follow-up` only
 when there is a real residual issue or next step.
 
-13. Complete the task only after verification, review, and the completion note:
+14. Complete the task only after verification, review, and the completion note:
 
 ```bash
 gest task complete <id> --quiet
@@ -74,12 +78,13 @@ just typecheck
 just static
 just test [target]
 just smoke
+just browser [url-or-flow]
 git diff --check
 ```
 
 If the project has no command contract yet, route to `gsu` before assuming
 language-specific tools.
 
-Use `integration_tests/` scripts or direct browser-agent checks for frontend,
-UI, and interaction changes. If no durable integration script exists for a
-repeated browser flow, record that follow-up.
+Use browser spot checks for frontend, UI, and interaction changes even before a
+durable integration test exists. Use `integration_tests/` scripts for repeated
+browser flows; if no durable script exists yet, record that follow-up.

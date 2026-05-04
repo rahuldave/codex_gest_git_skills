@@ -631,8 +631,9 @@ Fix mechanical issues. Do not use `gfm` as a substitute for tests.
 ### GTE
 
 Run unit tests, API regression tests, smoke checks, and integration/browser
-checks appropriate to the change. Add tests when changed callable code lacks
-focused coverage.
+checks appropriate to the change. Browser spot checks are exploratory
+implementation verification; durable browser integration tests are rerunnable
+scripts or tests. Add tests when changed callable code lacks focused coverage.
 
 ### GDO
 

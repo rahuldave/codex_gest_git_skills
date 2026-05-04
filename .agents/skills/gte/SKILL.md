@@ -25,6 +25,11 @@ For browser-agent flows that become recurring checks, store the commands in
 shell scripts under `integration_tests/` so they can be rerun outside chat
 history.
 
+Browser spot checks are different from integration tests. Spot checks are
+exploratory page/interaction inspections during implementation; they should be
+reported in verification notes, but they do not replace durable tests when a
+flow needs regression coverage.
+
 ## Workflow
 
 1. Identify changed behavior and the smallest meaningful test layer.
@@ -45,8 +50,10 @@ gest search "Follow-up <feature/module>" --all --json --limit 20
 5. Run the relevant focused tests first.
 6. Run the broader project test suite.
 7. Run smoke checks when they exercise cross-system wiring.
-8. Run integration/browser checks for frontend, UI, or interaction changes.
-9. Report commands and results. If a layer cannot run, say exactly why.
+8. Run browser spot checks for frontend, UI, or interaction changes.
+9. Run durable integration/browser checks when the project contract defines
+   them or the flow needs regression coverage.
+10. Report commands and results. If a layer cannot run, say exactly why.
 
 Prefer `just` targets when the project contract defines them. Typical shapes
 include:
@@ -56,6 +63,7 @@ just test [target]
 just regression [target]
 just integration [flow-or-target]
 just smoke
+just browser [url-or-flow]
 ```
 
 If no command contract exists yet, inspect the project manifests and propose or

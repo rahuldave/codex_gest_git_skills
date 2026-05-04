@@ -33,6 +33,7 @@ Identify which of these concepts apply to the project:
 - regression tests
 - integration tests
 - smoke checks
+- browser spot checks
 - browser/UI verification
 - database/migration checks
 - API docs
@@ -90,6 +91,7 @@ Focused tests: just test [target]
 Full tests: just test
 Smoke checks: just smoke
 Run app: just dev [port]
+Browser spot check: just browser [url-or-flow]
 Integration flow: just integration [flow]
 Docs check: just docs
 ```
@@ -136,6 +138,37 @@ For a simple Node-targeted TypeScript project, a good starting profile is:
   runner for existing projects
 - dev dependencies: `typescript`, `@types/node`, and the chosen formatter/linter
 - lint defaults: source and config files, not generated outputs such as `dist/`
+
+## Browser Setup
+
+When a project has browser UI, ask the user whether browser-agent checks should
+be part of the command contract. Prefer `npx agent-browser` for a simple
+project-local/on-demand setup:
+
+```just
+browser-setup:
+  npx agent-browser install
+
+browser url="http://127.0.0.1:3000":
+  npx agent-browser open {{url}}
+```
+
+If the team wants the faster global CLI, document and verify:
+
+```bash
+npm i -g agent-browser
+agent-browser install
+agent-browser skills get core
+```
+
+Record which form the project uses in `AGENTS.md`. Keep two browser concepts
+separate:
+
+- Browser spot checks: exploratory visual/interaction checks during
+  implementation, often run against the current dev server before tests are
+  formalized.
+- Browser integration tests: durable, rerunnable scripts or tests under
+  `integration_tests/`, `e2e/`, or the project's chosen test location.
 
 ## Ignore Rules
 

@@ -147,6 +147,9 @@ these placeholders with the project-specific mappings and arguments:
 <full test command or just test>
 <smoke command or just smoke>
 <run app command or just dev [port]>
+<browser setup command or just browser-setup>
+<browser spot check command or just browser [url-or-flow]>
+<browser integration command or just integration [flow]>
 <docs command or just docs>
 git diff --check
 ```
@@ -168,8 +171,12 @@ Recommended test layout:
   browser-agent flows should become rerunnable shell scripts here.
 
 For frontend, browser UI, or interaction changes, use the `agent-browser` skill
-to inspect the running app visually and exercise the relevant interaction flow.
-Do this in addition to code checks so visual regressions and broken browser
-gestures are caught before handoff.
+or the mapped browser spot-check command to inspect the running app visually and
+exercise the relevant interaction flow. Do this in addition to code checks so
+visual regressions and broken browser gestures are caught before handoff.
 If browser-agent verification cannot be completed, say exactly why in the final
 response and do not imply the interaction was checked.
+
+Browser spot checks are exploratory implementation checks. Browser integration
+tests are durable rerunnable checks; put repeated browser-agent flows under the
+project's integration test location.
