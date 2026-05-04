@@ -13,6 +13,13 @@ configuration.
 
 ## Core Job
 
+Use GTW before any code-writing turn in a Gest-managed workspace. If a request
+may edit code, templates, styles, tests, docs, workflow files, generated project
+artifacts, or other repo files, first make the Gest tracking decision visible:
+inspect or create the relevant task, claim it when needed, and record scope
+changes before editing. Treat a user typo such as "gtx" as "gtw" unless a
+separate named skill is actually available.
+
 Before editing files, decide:
 
 1. Is this a tiny untracked answer, a session task, or development work?
