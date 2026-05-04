@@ -16,18 +16,21 @@ Use for one concrete implementable Gest task.
    verification constraints.
 3. If the task is too broad, stop and split it with `gpl`/`gis`.
 4. Claim it: `gest task claim --as codex <id> --quiet`
-5. Inspect relevant code and docs.
-6. Make scoped edits.
-7. Run `gfm` for formatting, linting, typechecking, compile/static checks, and
+5. Confirm the branch/execution mode before editing. For substantial write
+   work, look for or set `vcs.tool`, `vcs.branch_mode`, `vcs.execution`,
+   `vcs.parallel_allowed`, `vcs.branch`, and `vcs.workspace_path` metadata.
+6. Inspect relevant code and docs.
+7. Make scoped edits.
+8. Run `gfm` for formatting, linting, typechecking, compile/static checks, and
    diff hygiene.
-8. Run `gte` for focused unit/API regression tests, smoke checks, and
+9. Run `gte` for focused unit/API regression tests, smoke checks, and
    integration/browser checks appropriate to the changed behavior. Any changed
    callable code needs tests; smoke checks alone are not enough.
-9. Run `gdo` when user docs, developer docs, workflow docs, examples, or command
+10. Run `gdo` when user docs, developer docs, workflow docs, examples, or command
    references are affected.
-10. Run `grv` after every code change, even for quick development without a pull
+11. Run `grv` after every code change, even for quick development without a pull
    request. Fix or record findings before completion.
-11. For non-trivial leaf tasks, add a completion note before completion. Preserve
+12. For non-trivial leaf tasks, add a completion note before completion. Preserve
    the task description as intent; record what actually happened in the note:
 
 ```bash
@@ -37,7 +40,7 @@ gest task note add <id> --agent codex --body "Done: ...\nVerification: ...\nFoll
 Use `Done` and `Verification` in every completion note. Add `Follow-up` only
 when there is a real residual issue or next step.
 
-12. Complete the task only after verification, review, and the completion note:
+13. Complete the task only after verification, review, and the completion note:
 
 ```bash
 gest task complete <id> --quiet
@@ -45,6 +48,19 @@ gest task complete <id> --quiet
 
 Update parent notes/status when useful. Do not complete long-lived outline
 parents unless the full subtree is done.
+
+## VCS Execution Guardrails
+
+If the task is running in a GitButler-managed workspace, use current `but` CLI
+write commands (`but branch new`, `but stage`, `but commit`, `but push`,
+`but pr`) and do not use raw `git commit`, `git switch`, `git checkout`, or
+branch-mutating git commands. Prefer `but status` and `but diff` when deciding
+which branch owns a change.
+
+Do not run parallel write work inside one GitButler workspace. If
+`vcs.tool=git-butler` and `vcs.execution=gitbutler-workspace`, the task is
+sequential. Parallel implementation requires separate physical worktrees with a
+distinct `vcs.workspace_path` recorded for each task.
 
 ## Checks
 

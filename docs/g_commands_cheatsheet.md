@@ -19,6 +19,7 @@ not just answer a question. It will:
 - decide whether a spec is needed before implementation
 - choose or create the right durable parent task
 - create and claim concrete leaf tasks before edits
+- choose a branch model and execution model for write changes
 - decide whether GitHub issue promotion is appropriate
 - route to the right specialized g-command
 - decide when verified work should be committed
@@ -141,6 +142,26 @@ At durable checkpoints, Codex should also:
   iterations
 - run an explicit review pass after every code change
 - report graph paths, commit hashes, review status, and GitHub issue decision
+
+## Branch And Stack Habits
+
+For Gest-tracked writes, Codex should keep the branch/review model separate from
+the execution model:
+
+- one coherent session or development workstream: one branch, possibly multiple
+  meaningful commits
+- several meaty dependent slices: stacked branches or stacked PRs
+- several independent slices running at the same time: physical worktrees
+
+GitButler support is sequential by default. GitButler parallel branches and
+stacked branches share one managed workspace, so agents should not use
+GitButler parallel lanes for concurrent writes. If concurrent write work is
+needed, use separate physical worktrees, then integrate the results into the
+intended branch or stack afterward.
+
+In GitButler-managed mode, Codex should write with `but` commands such as
+`but branch new`, `but stage`, `but commit`, `but push`, and `but pr`, not raw
+`git commit`, `git switch`, `git checkout`, or branch-mutating git commands.
 
 ## Naming Notes
 

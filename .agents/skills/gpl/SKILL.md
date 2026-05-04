@@ -35,7 +35,8 @@ the existing tree over creating a duplicate outline area.
 3. What depth should new tasks have?
 4. Which tasks are independent?
 5. Which phases and `blocked-by` links are needed?
-6. Should GitHub metadata be attached?
+6. Which branch model and execution model should write tasks use?
+7. Should GitHub metadata be attached?
 
 ## Output Structure
 
@@ -47,6 +48,24 @@ Create tasks with native `child-of` links:
 
 Create or update an iteration and add tasks with explicit phases. Tasks in the
 same phase must be safe to run concurrently.
+
+For every non-trivial write slice, decide or leave clear metadata placeholders
+for:
+
+```text
+vcs.tool=git|git-butler|jj
+vcs.branch_mode=session-branch|development-branch|stacked-session|stacked-development|parallel-worktrees
+vcs.execution=main-worktree|git-worktrees|gitbutler-workspace|jj-workspaces
+vcs.parallel_allowed=true|false
+vcs.branch=<branch-name>
+vcs.workspace_path=<absolute-path>
+```
+
+Use stacked branch modes for multiple meaty dependent slices that should be
+reviewed separately. Use `parallel-worktrees` only for independent slices that
+will run at the same time in separate physical worktrees. Do not plan parallel
+write execution inside one GitButler workspace; GitButler stacks and parallel
+lanes are sequential curation tools for agents.
 
 Report task IDs, phase grouping, dependencies, and whether `gor` can parallelize
 the work.

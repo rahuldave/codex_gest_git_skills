@@ -1,10 +1,10 @@
 # Gest-Codex Workflow
 
-Last updated: 2026-05-03.
+Last updated: 2026-05-04.
 
 This document defines how Codex should use Gest, GitHub, and the local skill
-family while working in a project repository. The goal is to preserve creative
-flow without losing a durable task tree.
+family while working in a Gest-tracked repository. The goal is to preserve
+creative flow without losing a durable task tree.
 
 ## Core Model
 
@@ -24,6 +24,92 @@ There are four distinct concepts:
 
 The mode of an iteration does not determine whether work can run in parallel.
 Parallelism depends on task independence, file overlap, and risk.
+
+## Branch, Stack, And Worktree Policy
+
+Main should stay integration-ready. Any Gest-tracked workflow that writes files
+should choose an explicit VCS execution mode before editing. Keep two decisions
+separate:
+
+- **branch model**: how the work will be reviewed and integrated
+- **execution model**: where agents are allowed to write
+
+Use branch names keyed to the highest meaningful Gest task for the current
+workstream, not necessarily the permanent product root:
+
+```text
+gest/<task-id-short>-two-word-summary
+session/<task-id-short>-two-word-summary
+```
+
+Use these branch modes:
+
+- `session-branch`: one tactical session branch. Good for a small session leaf
+  or several small related session edits under one parent.
+- `development-branch`: one durable branch for one coherent feature, bug, or
+  workflow change. Multiple commits are fine when they are useful checkpoints.
+- `stacked-session`: multiple meaty dependent session slices that should remain
+  separately reviewable.
+- `stacked-development`: multiple meaty dependent development slices that should
+  become stacked branches or stacked PRs.
+- `parallel-worktrees`: multiple independent meaty slices worked at the same
+  time in separate physical worktrees.
+
+Use these execution modes:
+
+- `main-worktree`: one agent writes in the current checkout.
+- `git-worktrees`: one git worktree per parallel task.
+- `gitbutler-workspace`: one sequential agent in the GitButler-managed
+  workspace.
+- `jj-workspaces`: one jj workspace per parallel task, if the project is using
+  jj.
+
+GitButler stacks are based on GitButler's applied branch workspace model. That
+is good for sequential stack curation, but not for multiple agents writing to
+the same working tree. Therefore:
+
+- never run parallel write agents in one `gitbutler-workspace`
+- never use GitButler parallel lanes as the agent parallelism primitive
+- if work must be parallel, use physical `git-worktrees` first and integrate the
+  results into a branch or stack afterward
+- when working inside GitButler mode, use current `but` CLI writes such as
+  `but branch new`, `but stage`, `but commit`, `but push`, and `but pr`; do not
+  use raw `git commit`, `git switch`, `git checkout`, or branch-mutating git
+  commands
+
+Default integration:
+
+- simple branches: rebase onto the target branch, then fast-forward or squash
+  when appropriate
+- GitButler stacks: review/merge bottom-up; GitHub merge commits are acceptable
+  for stack ergonomics when using GitButler-managed stacked PRs
+- parallel worktrees: integrate each finished worktree intentionally before
+  starting dependent follow-on work
+
+Record branch and execution state in Gest metadata when work is more than a
+tiny local edit:
+
+```text
+vcs.tool=git|git-butler|jj
+vcs.base_branch=main
+vcs.base_sha=<sha>
+vcs.branch_mode=session-branch|development-branch|stacked-session|stacked-development|parallel-worktrees
+vcs.execution=main-worktree|git-worktrees|gitbutler-workspace|jj-workspaces
+vcs.parallel_allowed=true|false
+vcs.branch=<branch-name>
+vcs.stack_root=<branch-name>
+vcs.stack_parent=<branch-name>
+vcs.stack_index=<n>
+vcs.workspace_path=<absolute-path>
+vcs.integration=fast-forward|squash|rebase|merge|stacked-pr|local-only
+vcs.owner_session=<thread-or-agent-label>
+vcs.write_scope=<paths-or-subsystems>
+```
+
+`vcs.parallel_allowed=false` is required when
+`vcs.tool=git-butler` and `vcs.execution=gitbutler-workspace`. Parallel claims
+are allowed only when each writable task has a distinct physical
+`vcs.workspace_path`, such as separate git worktrees.
 
 ## Task Hierarchy
 
@@ -144,7 +230,8 @@ Work-type tags:
 - `regression`
 
 Metadata should hold source-of-truth facts such as `workflow.kind`, `depth`,
-`github.issue`, `github.url`, `outline.root`, and `parent_task`.
+`github.issue`, `github.url`, `outline.root`, `parent_task`, and `vcs.*`
+branch/execution metadata.
 
 ## Completion Notes
 
@@ -276,14 +363,13 @@ Checkpoint steps:
 
 ## Template Sync
 
-Reusable workflow changes should not live only in one project workspace. When
+Reusable workflow changes should not live only in one target workspace. When
 changing the `g*` skills, `AGENTS.md` workflow guidance, Gest/Codex playbook, or
 reusable tools such as `gest_mermaid_graph.py`, copy the reusable parts into the
-version-controlled workflow template repository.
-
-Then check, commit, and push that repository. The public template repo is the
-version-controlled source for workflow material that should be mixed into other
-projects. Keep project-specific details out of the template repo.
+version-controlled workflow template repository. Then check, commit, and push
+that repository. The template repo is the source for workflow material that
+should be mixed into other projects. Keep project-specific details out of the
+template repo.
 
 ## Iterations And Phases
 
@@ -393,8 +479,8 @@ Hook ideas to revisit:
   session/development classification, outline parenting, GitHub promotion, and
   serialized Gest commands.
 - **Pre-edit**: inject project-local style and testing guidance before source
-  edits, for example `docs/dev/code-style.md`, `docs/dev/testing.md`, and any
-  project invariants.
+  edits, for example `docs/dev/code-style.md`, `docs/dev/testing.md`, and
+  project-specific invariants.
 - **Pre-commit**: inject commit conventions, remind Codex never to include Gest
   IDs in commit messages, and only use GitHub issue footers when metadata
   exists.
@@ -431,8 +517,8 @@ User-invoked Gest skills use three-letter names beginning with `g`.
 - `gfm`: Gest Format. Run formatting, linting, typechecking, compile/static
   checks, and diff hygiene.
 - `gte`: Gest Test. Run unit, regression, smoke, API, and integration tests.
-- `gdo`: Gest Docs. Create, update, and verify user-facing, developer-facing,
-  and in-code docs affected by the task.
+- `gdo`: Gest Docs. Check, create, update, and verify user-facing,
+  developer-facing, and in-code docs affected by the task.
 - `gcm`: Gest Commit. Create a Git commit tied to GitHub metadata when present.
 
 Optional later skills:
@@ -453,10 +539,12 @@ directly, but ordinary requests can simply use `gtw` or natural language.
 3. Choose or create the best outline parent.
 4. Decide tags, metadata, and depth.
 5. Decide if parallel work is useful.
-6. Create/claim concrete leaf tasks before edits. For multi-stage work, create
+6. Decide the branch model and execution model, recording `vcs.*` metadata for
+   non-trivial writes.
+7. Create/claim concrete leaf tasks before edits. For multi-stage work, create
    a treelet with child leaves for separately verifiable stage commands.
-7. Route to the appropriate stage skill.
-8. Complete leaf tasks after verification and report IDs.
+8. Route to the appropriate stage skill.
+9. Complete leaf tasks after verification and report IDs.
 
 ### GBS
 
@@ -501,22 +589,29 @@ directly, but ordinary requests can simply use `gtw` or natural language.
 
 1. Read and claim one concrete task.
 2. Split it first if it is too broad.
-3. Implement minimal scoped changes.
-4. Run `gfm` for mechanical checks.
-5. Run `gte` for tests; changed callable code and APIs need focused tests.
-6. Run `gdo` when user-facing docs, developer-facing docs, or in-code docs are
+3. Confirm the task's branch/execution mode before editing. In GitButler mode,
+   use only `but` writes and keep execution sequential unless a physical
+   worktree was assigned.
+4. Implement minimal scoped changes.
+5. Run `gfm` for mechanical checks.
+6. Run `gte` for tests; changed callable code and APIs need focused tests.
+7. Run `gdo` when user-facing docs, developer-facing docs, or in-code docs are
    affected.
-7. Run `grv` after every code change.
-8. Complete the leaf task and add parent notes/status updates.
+8. Run `grv` after every code change.
+9. Complete the leaf task and add parent notes/status updates.
 
 ### GOR
 
 1. Read iteration status and graph.
 2. Group tasks by phase.
 3. Decide sequential vs parallel execution per phase.
-4. Use git worktrees/subagents for independent tasks when useful.
-5. Integrate results and advance phases.
-6. Clean up worktrees and report failures.
+4. Block shared GitButler workspace parallelism. If `vcs.tool=git-butler` and
+   `vcs.execution=gitbutler-workspace`, run tasks sequentially even when they
+   are in the same phase.
+5. Use physical git worktrees/subagents for independent tasks when useful, and
+   record each `vcs.workspace_path`.
+6. Integrate results and advance phases.
+7. Clean up worktrees and report failures.
 
 ### GRV
 
@@ -544,25 +639,26 @@ future maintenance.
 
 ### GCM
 
-Inspect status/diff/log, draft a conventional commit, ask for confirmation,
-stage explicit files, and commit. Include GitHub issue footers only when
-metadata exists. Never include Gest IDs in commit messages.
+Inspect status/diff/log, draft a conventional commit, ask for confirmation when
+needed, stage explicit files, and commit. In GitButler-managed workspaces, use
+`but status`, `but diff`, `but branch list`, `but stage`, and `but commit`
+instead of raw git writes. Include GitHub issue footers only when metadata
+exists. Never include Gest IDs in commit messages.
 
-## Close Reading Defaults
+## Project Defaults
 
-Replace these examples with commands for the target project:
+Replace this section in each target repository with project-specific
+verification commands. Common checks include:
 
 ```bash
-uv run ruff check .
-uv run ty check
-uv run python -m compileall <packages> <scripts>
-uv run pytest tests regression_tests
-uv run python scripts/smoke_check.py
+<format command>
+<lint command>
+<typecheck command>
+<compile/static command>
+<test command>
+<smoke command>
 git diff --check
 ```
-
-Run verification from the project root unless local project instructions say
-otherwise.
 
 Recommended test layout:
 

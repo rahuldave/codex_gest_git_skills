@@ -30,6 +30,10 @@ then make the needed changes.
 4. Keep project-specific details in project docs and reusable workflow material
    in the template repository.
 5. Check examples and commands for drift.
-6. If docs are rendered, generated, or published, run the relevant render/build
+6. If docs are rendered in-app or generated, run the relevant render/build
    check.
 7. Report docs changed and any docs intentionally left for later.
+
+For reusable Gest/Codex workflow material, mirror reusable updates to the
+version-controlled workflow template repository, then verify, commit, and push
+that template repository unless blocked.

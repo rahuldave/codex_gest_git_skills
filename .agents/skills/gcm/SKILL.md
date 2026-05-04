@@ -60,6 +60,14 @@ git log --oneline -10
 git remote -v
 ```
 
+If the repository is in GitButler-managed mode, inspect with GitButler as well:
+
+```bash
+but status
+but diff
+but branch list --all
+```
+
 Draft a conventional commit:
 
 ```text
@@ -79,6 +87,32 @@ is ambiguous, risky, or outside the workflow's durable-checkpoint rules. If the
 user has asked you to manage commits or the workflow clearly says the verified
 development slice should be committed, proceed. Stage explicit files rather
 than using `git add .`.
+
+## GitButler Commit Path
+
+When `vcs.tool=git-butler` or the checkout is on the GitButler workspace branch,
+do not use raw `git commit`, `git switch`, `git checkout`, or branch-mutating
+git commands. Use current `but` CLI writes:
+
+```bash
+but status
+but branch list --all
+but stage <file-or-hunk-id> <branch-name>
+but commit -o -m "<message>" <branch-name>
+but push <branch-name>
+```
+
+If there is exactly one applied GitButler branch and all uncommitted changes
+belong there, `but commit -m "<message>" <branch-name>` is acceptable. When
+multiple branches or staged areas exist, use explicit branch targets and
+`--only` (`-o`) after staging to avoid sweeping unrelated unassigned changes
+into the wrong branch.
+
+For stacked branches, commit review feedback to the branch where it belongs,
+not automatically to the top of the stack. Merge/review the stack bottom-up.
+GitHub merge commits are acceptable for GitButler-managed stacks when that keeps
+stack retargeting smooth; simple non-stack branches should still prefer rebase
+plus fast-forward or squash.
 
 Before returning final after substantial work, inspect `git status --short
 --branch`. If it shows Codex-owned changes and a commit-required trigger

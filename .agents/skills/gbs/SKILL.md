@@ -13,9 +13,12 @@ Use when the user has a rough idea, fuzzy feature, or exploratory direction.
    `gest search "<topic>" --all --json --limit 20`, then inspect likely hits
    with `gest task show`, `gest task note list`, or `gest iteration show`.
 2. Identify existing patterns, constraints, risks, and open questions.
-3. Ask clarifying questions one at a time when needed.
-4. Propose 2-3 approaches with trade-offs.
-5. Recommend one of:
+3. For workflow/VCS ideas, separate branch model from execution model. Call out
+   whether GitButler work would be sequential stack curation or physical
+   worktree parallelism.
+4. Ask clarifying questions one at a time when needed.
+5. Propose 2-3 approaches with trade-offs.
+6. Recommend one of:
    - stay in session exploration
    - create/update an outline task with `gis`
    - create a spec with `gsp`

@@ -36,6 +36,29 @@ Use native Gest `child-of` / `parent-of` links for hierarchy. Tags are filters,
 not hierarchy. Claim one leaf task at a time, verify before completion, and keep
 long-lived outline parents open until the whole subtree is done.
 
+For any Gest-tracked work that writes files, choose a VCS branch model and
+execution model before editing. Branch names should be keyed to the highest
+meaningful Gest task for the workstream, for example
+`gest/<task-id-short>-two-word-summary` or
+`session/<task-id-short>-two-word-summary`.
+
+Use a normal session/development branch for one coherent workstream. Use stacked
+branches for multiple meaty dependent slices that should be separately
+reviewable. Use physical git worktrees for multiple independent write tasks
+running at the same time.
+
+GitButler parallel branches and stacked branches share one managed workspace.
+They are sequential branch-curation tools for agents, not an agent-parallelism
+primitive. Do not launch parallel write agents in one GitButler workspace or use
+GitButler parallel lanes for agent parallelism. If parallel work is needed, use
+separate physical worktrees first and integrate the results into the intended
+branch or stack afterward.
+
+When GitButler owns the workspace, use current `but` CLI write commands such as
+`but branch new`, `but stage`, `but commit`, `but push`, and `but pr`. Do not
+use raw `git commit`, `git switch`, `git checkout`, or branch-mutating git
+commands in GitButler mode.
+
 For non-trivial completed leaf tasks, add a Gest task note before completion:
 
 ```bash

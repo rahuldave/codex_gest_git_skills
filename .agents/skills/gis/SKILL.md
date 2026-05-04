@@ -41,3 +41,17 @@ gest task create "<title>" \
 ```
 
 Use `subissue` for lower-level children. Subissues should always have a parent.
+
+For tasks that will write files, include VCS metadata when the branch/execution
+shape is known:
+
+```bash
+--metadata vcs.tool=git-butler \
+--metadata vcs.branch_mode=stacked-development \
+--metadata vcs.execution=gitbutler-workspace \
+--metadata vcs.parallel_allowed=false
+```
+
+Use `vcs.execution=git-worktrees` and a distinct `vcs.workspace_path` per task
+when parallel agents will write concurrently. Do not model GitButler parallel
+lanes as agent parallelism.

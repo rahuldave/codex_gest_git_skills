@@ -26,10 +26,11 @@ Before editing files, decide:
 2. Does it need a spec before implementation?
 3. Which durable outline task should parent this work?
 4. Which tags and metadata apply?
-5. Are there independent tasks that should run in parallel worktrees?
-6. Is GitHub promotion appropriate?
-7. Which stage skill should handle the next step?
-8. Is the work reaching a commit checkpoint, or should it stay uncommitted for
+5. Which branch model and execution model should own write changes?
+6. Are there independent tasks that should run in parallel physical worktrees?
+7. Is GitHub promotion appropriate?
+8. Which stage skill should handle the next step?
+9. Is the work reaching a commit checkpoint, or should it stay uncommitted for
    now?
 
 Everything substantial should become a Gest task/issue with appropriate
@@ -135,7 +136,44 @@ github.issue=<number>
 github.url=<url>
 outline.root=<gest-task-id>
 parent_task=<gest-task-id>
+vcs.tool=git|git-butler|jj
+vcs.branch_mode=session-branch|development-branch|stacked-session|stacked-development|parallel-worktrees
+vcs.execution=main-worktree|git-worktrees|gitbutler-workspace|jj-workspaces
+vcs.parallel_allowed=true|false
+vcs.branch=<branch-name>
+vcs.workspace_path=<absolute-path>
 ```
+
+## Branch And Execution Policy
+
+For any Gest-tracked workflow that writes files, decide the branch model before
+editing. Key branch names to the highest meaningful Gest task for this unit of
+work, using a short task prefix plus a two- or three-word dash summary:
+
+```text
+gest/<task-id-short>-branch-policy
+session/<task-id-short>-ui-polish
+```
+
+Use `session-branch` for small session work, `development-branch` for one
+coherent durable slice, and `stacked-session` or `stacked-development` when a
+session contains multiple meaty dependent slices that should remain separately
+reviewable.
+
+Keep branch structure separate from agent execution. GitButler stacks are fine
+for sequential branch curation, but shared GitButler workspaces are not an
+agent-parallelism primitive. If `vcs.tool=git-butler` and
+`vcs.execution=gitbutler-workspace`, set `vcs.parallel_allowed=false` and run
+write tasks sequentially. If work must run in parallel, use physical
+`git-worktrees` first; each writable task needs its own `vcs.workspace_path`.
+Afterward, integrate the results into a normal branch or stack.
+
+In GitButler-managed mode, use current `but` CLI write commands such as
+`but branch new`, `but stage`, `but commit`, `but push`, and `but pr`. Do not
+use raw `git commit`, `git switch`, `git checkout`, or branch-mutating git
+commands while GitButler owns the workspace. Read-only git commands such as
+`git log` and `git diff` are acceptable when they clarify history, but prefer
+`but status` and `but diff` for branch ownership.
 
 ## Creating Work
 
@@ -228,12 +266,15 @@ At every durable checkpoint, run the cleanup that future agents need:
   development without a pull request
 - report graph paths, commit hashes, push status, review status, and GitHub
   issue decision
+- report the final branch/execution mode for substantial write work, including
+  whether GitButler stack work was sequential or whether parallel work used
+  physical worktrees
 
 ## Template Sync
 
-When changing reusable workflow material, copy the reusable parts to
-the version-controlled workflow template repository, then check, commit, and
-push that repo. This applies to `g*` skills, AGENTS workflow guidance, the
+When changing reusable workflow material, copy the reusable parts to the
+version-controlled workflow template repository, then check, commit, and push
+that repo. This applies to `g*` skills, AGENTS workflow guidance, the
 Gest/Codex playbook, and reusable tools. Keep project-specific details out of
 the template.
 

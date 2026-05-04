@@ -1,6 +1,6 @@
 ---
 name: gor
-description: Gest Orchestrate. Execute a phased Gest iteration, deciding per phase whether work should run sequentially or in parallel git worktrees/subagents.
+description: Gest Orchestrate. Execute a phased Gest iteration, deciding per phase whether work should run sequentially or in parallel physical worktrees/subagents.
 ---
 
 # GOR: Gest Orchestrate
@@ -25,7 +25,9 @@ gest project --json
 4. Decide execution strategy:
    - single task: run `gim` locally
    - dependent tasks: run sequentially by phase
-   - independent code-touching tasks: use git worktrees/subagents
+   - independent code-touching tasks: use physical git worktrees/subagents
+   - GitButler-managed workspace tasks: run sequentially unless each task has a
+     distinct physical worktree
 5. Claim with:
 
 ```bash
@@ -35,9 +37,32 @@ gest iteration next <id> --claim --agent <agent-name> --json
 Exit code 75 means no task is currently available.
 
 6. For parallel work, create one git worktree per task, attach it to the same
-   Gest project, run implementation, integrate results, and clean up.
+   Gest project, run implementation, integrate results, and clean up. Record
+   `vcs.workspace_path` metadata for each writable task when practical.
 7. Advance phases only after current-phase tasks are terminal.
 8. Report successes, failures, and remaining tasks.
 
 Do not parallelize just because there are multiple tasks. Parallelize only when
 task independence and file ownership make it useful.
+
+## GitButler Guardrail
+
+GitButler parallel branches and stacked branches share one managed workspace.
+They are useful for sequential branch curation, but they are not the execution
+primitive for multiple write agents.
+
+Before dispatching more than one writable task, inspect task/iteration metadata
+for:
+
+```text
+vcs.tool=git-butler
+vcs.execution=gitbutler-workspace
+vcs.parallel_allowed=false
+```
+
+If those values apply, do not launch parallel write agents. Run the phase
+sequentially, using `but status`, explicit branch targets, and current `but`
+commands. If the phase truly needs parallelism, create physical git worktrees
+first and update metadata to `vcs.execution=git-worktrees` with a distinct
+`vcs.workspace_path` per task. After worktree tasks finish, integrate the
+results back into the intended branch or stack in a separate sequential step.

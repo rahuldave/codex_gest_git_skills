@@ -48,7 +48,8 @@ Use `gtw` as the default router for substantial project work. It decides:
 - whether a spec is needed before implementation
 - which durable Gest parent task should own the request
 - which tags and metadata apply
-- whether parallel worktrees/subagents are appropriate
+- which branch model and execution model should own write changes
+- whether parallel physical worktrees/subagents are appropriate
 - whether GitHub issue promotion is appropriate
 - whether a commit checkpoint has been reached
 
@@ -68,6 +69,27 @@ workflow/template changes, publishable docs, or non-trivial multi-file verified
 changes. Before final response for substantial work, inspect
 `git status --short --branch`; if Codex-owned changes remain and one of those
 triggers applies, run `gcm` or record the concrete no-commit reason.
+
+## Branch, Stack, And Worktree Policy
+
+For Gest-tracked writes, keep `main` integration-ready and choose both a branch
+model and an execution model before editing. Normal session or development work
+uses `session/<task-id>-summary` or `gest/<task-id>-summary` branches. Multiple
+meaty dependent slices should use stacked branches or stacked PRs. Multiple
+independent slices that run at the same time should use separate physical git
+worktrees.
+
+GitButler support is sequential by default. GitButler parallel branches and
+stacked branches share one managed workspace, so they are branch-curation tools,
+not the agent-parallelism primitive. Do not launch parallel write agents in one
+GitButler workspace and do not use GitButler parallel lanes for agent
+parallelism. If work must run in parallel, use physical worktrees first, then
+integrate the results into the intended branch or stack.
+
+In GitButler-managed mode, use current `but` CLI write commands such as
+`but branch new`, `but stage`, `but commit`, `but push`, and `but pr`. Do not
+use raw `git commit`, `git switch`, `git checkout`, or branch-mutating git
+commands while GitButler owns the workspace.
 
 ## Publishing This Repo
 
