@@ -41,6 +41,7 @@ A good default prompt is:
 | Command | Name | Use When |
 | --- | --- | --- |
 | `gbs` | Gest Brainstorm | The idea is fuzzy and needs exploration, trade-offs, or clarifying questions. |
+| `gsu` | Gest Setup | A repo needs bootstrap, tool selection, installs, ignore rules, Justfile targets, or AGENTS.md command-contract mapping. |
 | `gsp` | Gest Spec | The work needs a product/design spec before implementation. |
 | `gpl` | Gest Plan | A spec, outline task, or GitHub-backed initiative needs to be decomposed into tasks, phases, and dependencies. |
 | `gis` | Gest Issue | A durable Gest outline task or subtask needs to be created or updated. |

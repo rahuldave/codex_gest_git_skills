@@ -64,16 +64,21 @@ distinct `vcs.workspace_path` recorded for each task.
 
 ## Checks
 
-Use project-local commands. A typical Python/web project may include:
+Use the project command contract in `AGENTS.md`. Prefer `just` targets when the
+project maps workflow concepts to them. Typical concepts include:
 
 ```bash
-uv run ruff check .
-uv run ty check
-uv run python -m compileall <packages> <scripts>
-uv run pytest tests regression_tests
-uv run python scripts/smoke_check.py
+just fmt [path]
+just lint [path]
+just typecheck
+just static
+just test [target]
+just smoke
 git diff --check
 ```
+
+If the project has no command contract yet, route to `gsu` before assuming
+language-specific tools.
 
 Use `integration_tests/` scripts or direct browser-agent checks for frontend,
 UI, and interaction changes. If no durable integration script exists for a

@@ -11,24 +11,28 @@ runtime tests or documentation checks; route those to `gte` and `gdo`.
 ## Workflow
 
 1. Identify project and changed files.
-2. Run formatting, linting, typechecking, compile/static checks, and diff
+2. Read the project command contract in `AGENTS.md`, especially any `just`
+   target mappings and focused-argument guidance.
+3. Run formatting, linting, typechecking, compile/static checks, and diff
    hygiene appropriate to the project.
-3. Fix mechanical issues.
-4. Re-run failing checks.
-5. Report every command run and whether it passed.
+4. Fix mechanical issues.
+5. Re-run failing checks.
+6. Report every command run and whether it passed.
 
-Use the target repository's project-specific verification commands. Common
-examples include:
+Use the target repository's project-specific command contract. Prefer `just`
+targets when `AGENTS.md` maps them. Common concepts include:
 
 ```bash
-<format command>
-<lint command>
-<typecheck command>
-<compile/static command>
+just fmt [path]
+just lint [path]
+just typecheck
+just static
+just build
 git diff --check
 ```
 
-Do not substitute smoke checks for `gte`.
+If no command contract exists yet, inspect the project manifests and propose or
+route to `gsu` to establish one. Do not substitute smoke checks for `gte`.
 
 When a repository is GitButler-managed, use `but status` or `but diff` to
 identify branch-owned changes before running mechanical checks. Read-only git

@@ -28,7 +28,10 @@ history.
 ## Workflow
 
 1. Identify changed behavior and the smallest meaningful test layer.
-2. Search Gest for prior failures, browser-agent audits, smoke-check findings,
+2. Read the project command contract in `AGENTS.md`, especially mappings for
+   focused tests, full tests, regression tests, integration tests, smoke checks,
+   and browser/UI verification.
+3. Search Gest for prior failures, browser-agent audits, smoke-check findings,
    and unresolved follow-ups in the touched area:
 
 ```bash
@@ -37,10 +40,23 @@ gest search "browser audit <feature/module>" --all --json --limit 20
 gest search "Follow-up <feature/module>" --all --json --limit 20
 ```
 
-3. Add or update tests for changed inner functions and APIs when coverage is
+4. Add or update tests for changed inner functions and APIs when coverage is
    missing.
-4. Run the relevant focused tests first.
-5. Run the broader project test suite.
-6. Run smoke checks when they exercise cross-system wiring.
-7. Run integration/browser checks for frontend, UI, or interaction changes.
-8. Report commands and results. If a layer cannot run, say exactly why.
+5. Run the relevant focused tests first.
+6. Run the broader project test suite.
+7. Run smoke checks when they exercise cross-system wiring.
+8. Run integration/browser checks for frontend, UI, or interaction changes.
+9. Report commands and results. If a layer cannot run, say exactly why.
+
+Prefer `just` targets when the project contract defines them. Typical shapes
+include:
+
+```bash
+just test [target]
+just regression [target]
+just integration [flow-or-target]
+just smoke
+```
+
+If no command contract exists yet, inspect the project manifests and propose or
+route to `gsu` to establish one.

@@ -6,6 +6,8 @@ coding, debugging, implementation, refactoring, documentation, verification, and
 project planning.
 
 The user may invoke the router as `$gtw`, `gtw:`, or `/gtw`.
+Use `gsu` for repository bootstrap, setup refresh, tool selection, ignore
+rules, installs, command-contract mapping, and Justfile creation.
 
 If a request is substantial enough for Gest tracking but no `g*` command was
 explicitly invoked, still use the appropriate Gest workflow. If an agent chooses
@@ -129,17 +131,29 @@ an integration checkpoint before approval or merge. The PR should include a Gest
 context appendix with parent task, leaf tasks, iteration, artifacts/specs,
 verification, follow-ups, and graph links when that context is safe to expose.
 
-## Verification
+## Project Command Contract
 
-Replace with project commands, for example:
+Prefer a `Justfile` as the stable executable interface when present. Replace
+these placeholders with the project-specific mappings and arguments:
 
 ```bash
-<format command>
-<lint command>
-<typecheck command>
-<test command>
+<setup command>
+<format command or just fmt [path]>
+<lint command or just lint [path]>
+<typecheck command or just typecheck>
+<static/compile command or just static>
+<build command or just build>
+<focused test command or just test [target]>
+<full test command or just test>
+<smoke command or just smoke>
+<run app command or just dev [port]>
+<docs command or just docs>
 git diff --check
 ```
+
+Document command arguments here. For `just`, target parameters are passed
+positionally, for example `just lint src/foo.ts`, `just test tests/foo.test.ts`,
+or `just dev 3000`.
 
 Use `gfm` for formatting, linting, typechecking, compile/static checks, and
 diff hygiene. Use `gte` for unit tests, API regression tests, smoke checks, and
