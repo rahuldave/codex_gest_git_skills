@@ -200,6 +200,8 @@ gest task claim --as codex <leaf-id> --quiet
 ## Stage Routing
 
 - `gbs`: explore rough ideas.
+- `gsu`: bootstrap or refresh project setup, tool choices, command contracts,
+  Justfile targets, ignore rules, and installs.
 - `gsp`: create/update a spec artifact.
 - `gpl`: decompose a spec/outline into tasks, phases, and iterations.
 - `gis`: create/update durable Gest outline tasks.

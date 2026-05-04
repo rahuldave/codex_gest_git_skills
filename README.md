@@ -9,18 +9,24 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
 
 ## What Is Included
 
-- `.agents/skills/g*`: project-local Codex skills for Gest workflow routing,
+- `.agents/skills/g*`: project-local Codex skills for setup, Gest workflow routing,
   planning, implementation, review, formatting, testing, docs, promotion,
   pull request acceptance, orchestration, and commits.
 - `AGENTS.template.md`: starter agent instructions to copy into a target repo.
 - `docs/gest_codex_workflow.md`: the full workflow playbook.
 - `docs/g_commands_cheatsheet.md`: quick user-facing guide to `/gtw` and the
   other g-command skills.
+- `docs/gsu_typescript_hello_world.md`: disposable setup lab for a tiny
+  TypeScript project using `gsu` concepts and `just` command contracts.
+- `docs/gsu_language_profile_labs.md`: verified setup labs for Python/uv,
+  TypeScript/npm, Go, and Rust/Cargo profiles.
 - `docs/gest_gitbutler_workflow_guide.md`: user-facing setup and practice guide
   for Gest, the g skills, GitButler stacks, and physical worktrees.
 - `tools/gest_mermaid_graph.py`: optional read-only Gest SQLite exporter that
   writes clickable Mermaid/HTML relationship graphs.
 - `scripts/install.sh`: simple copy-based installer for target repos.
+- `templates/`: composable setup snippets for `.gitignore`, `.envrc`,
+  `.env.example`, and common `Justfile` targets.
 
 ## Install Into A Repo
 
@@ -41,6 +47,13 @@ AGENTS.template.md -> AGENTS.md, only if AGENTS.md does not already exist
 
 Review `AGENTS.md` after installing and replace placeholders such as project
 name, verification commands, and GitHub policy.
+Use `templates/` as `gsu` inputs when creating `.gitignore`, `.envrc`,
+`.env.example`, or `Justfile` command contracts.
+
+For a small setup-first example, read
+[`docs/gsu_typescript_hello_world.md`](docs/gsu_typescript_hello_world.md).
+For broader language-profile coverage, read
+[`docs/gsu_language_profile_labs.md`](docs/gsu_language_profile_labs.md).
 
 To learn the workflow by hand, read
 [`docs/gest_gitbutler_workflow_guide.md`](docs/gest_gitbutler_workflow_guide.md)
@@ -60,6 +73,12 @@ Use `gtw` as the default router for substantial project work. It decides:
 - whether parallel physical worktrees/subagents are appropriate
 - whether GitHub issue promotion is appropriate
 - whether a commit checkpoint has been reached
+
+Use `gsu` when bootstrapping a repository or refreshing its workflow contract.
+It helps choose tools, set up Git/Gest/Just/direnv expectations, create ignore
+rules, install or sync dependencies through the chosen package manager, and map
+project concepts such as lint, typecheck, test, build, smoke, docs, and run-app
+commands in `AGENTS.md`.
 
 Gest descriptions record intent. Non-trivial completed leaf tasks should get a
 task note before completion:

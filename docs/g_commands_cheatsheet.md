@@ -5,7 +5,11 @@ Codex/Gest skills installed. Use these commands in natural language, for
 example `/gtw fix the search bug`, `$gtw plan annotation import`, or
 `gcm: commit the verified slice`.
 
-For the longer explanation and a hands-on reproduction lab, read
+For a setup-focused TypeScript hello-world lab, read
+[`gsu_typescript_hello_world.md`](gsu_typescript_hello_world.md). For verified
+Python, TypeScript, Go, and Rust profile labs, read
+[`gsu_language_profile_labs.md`](gsu_language_profile_labs.md). For the longer
+explanation and hands-on Git/GitButler reproduction lab, read
 [`gest_gitbutler_workflow_guide.md`](gest_gitbutler_workflow_guide.md).
 
 ## Start Here: `/gtw`
@@ -41,6 +45,7 @@ A good default prompt is:
 | Command | Name | Use When |
 | --- | --- | --- |
 | `gbs` | Gest Brainstorm | The idea is fuzzy and needs exploration, trade-offs, or clarifying questions. |
+| `gsu` | Gest Setup | A repo needs bootstrap, tool selection, installs, ignore rules, Justfile targets, or AGENTS.md command-contract mapping. |
 | `gsp` | Gest Spec | The work needs a product/design spec before implementation. |
 | `gpl` | Gest Plan | A spec, outline task, or GitHub-backed initiative needs to be decomposed into tasks, phases, and dependencies. |
 | `gis` | Gest Issue | A durable Gest outline task or subtask needs to be created or updated. |

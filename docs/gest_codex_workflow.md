@@ -505,6 +505,8 @@ User-invoked Gest skills use three-letter names beginning with `g`.
 - `gtw`: Gest Track Work. Router/default skill for substantial work.
 - `gbs`: Gest Brainstorm. Explore ideas and decide whether a spec or outline is
   needed.
+- `gsu`: Gest Setup. Bootstrap or refresh tool choices, installs, ignore rules,
+  command contracts, Justfile targets, and project setup docs.
 - `gsp`: Gest Spec. Draft or update a Gest spec artifact.
 - `gpl`: Gest Plan. Decompose a spec or outline task into tasks, phases, links,
   and iterations.
@@ -629,8 +631,9 @@ Fix mechanical issues. Do not use `gfm` as a substitute for tests.
 ### GTE
 
 Run unit tests, API regression tests, smoke checks, and integration/browser
-checks appropriate to the change. Add tests when changed callable code lacks
-focused coverage.
+checks appropriate to the change. Browser spot checks are exploratory
+implementation verification; durable browser integration tests are rerunnable
+scripts or tests. Add tests when changed callable code lacks focused coverage.
 
 ### GDO
 
@@ -658,16 +661,18 @@ exists. Never include Gest IDs in commit messages.
 
 ## Project Defaults
 
-Replace this section in each target repository with project-specific
-verification commands. Common checks include:
+Replace this section in each target repository with the project-specific command
+contract. Prefer `just` targets when present, and document target arguments.
+Common checks include:
 
 ```bash
-<format command>
-<lint command>
-<typecheck command>
-<compile/static command>
-<test command>
-<smoke command>
+<format command or just fmt [path]>
+<lint command or just lint [path]>
+<typecheck command or just typecheck>
+<compile/static command or just static>
+<build command or just build>
+<focused test command or just test [target]>
+<smoke command or just smoke>
 git diff --check
 ```
 
