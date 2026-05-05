@@ -69,7 +69,8 @@ distinct `vcs.workspace_path` recorded for each task.
 ## Checks
 
 Use the project command contract in `AGENTS.md`. Prefer `just` targets when the
-project maps workflow concepts to them. Typical concepts include:
+project maps workflow concepts to them. For the reusable Just contract shape,
+see `docs/just_command_contract.md`. Typical concepts include:
 
 ```bash
 just fmt [path]
@@ -78,6 +79,7 @@ just typecheck
 just static
 just test [target]
 just smoke
+just dev [port]
 just browser [url-or-flow]
 git diff --check
 ```
@@ -86,5 +88,8 @@ If the project has no command contract yet, route to `gsu` before assuming
 language-specific tools.
 
 Use browser spot checks for frontend, UI, and interaction changes even before a
-durable integration test exists. Use `integration_tests/` scripts for repeated
-browser flows; if no durable script exists yet, record that follow-up.
+durable integration test exists. Before a browser check, ensure the app is
+served through the project run-app contract, commonly `just dev [port]`, or
+confirm that an existing server is already running. Use `integration_tests/`
+scripts for repeated browser flows; if no durable script exists yet, record that
+follow-up.
