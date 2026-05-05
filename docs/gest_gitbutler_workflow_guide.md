@@ -334,7 +334,7 @@ setup-only version of the TypeScript project, see
 Set paths:
 
 ```bash
-skills_repo=/path/to/codex_gest_git_skills
+skills_repo=/path/to/agent_gest_git_skills
 lab=/tmp/gest-gitbutler-workflow-lab
 rm -rf "$lab" "$lab-wt-a" "$lab-wt-b"
 mkdir -p "$lab/src"
