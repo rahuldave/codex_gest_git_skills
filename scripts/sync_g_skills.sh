@@ -10,10 +10,10 @@ Sync reusable g* skills from this repository into a target repository's
 USAGE
 }
 
-dry_run=()
+rsync_args=(-a --delete)
 dry_run_enabled=0
 if [[ "${1:-}" == "--dry-run" ]]; then
-  dry_run=(--dry-run)
+  rsync_args+=(--dry-run)
   dry_run_enabled=1
   shift
 fi
@@ -44,7 +44,7 @@ for source_dir in "$source_skills"/g*; do
     echo "Would create $target_skills/$skill_name"
     continue
   fi
-  rsync -a --delete "${dry_run[@]}" "$source_dir/" "$target_skills/$skill_name/"
+  rsync "${rsync_args[@]}" "$source_dir/" "$target_skills/$skill_name/"
 done
 
 echo "Synced reusable g* skills to $target_skills"
