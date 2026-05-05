@@ -146,13 +146,10 @@ smoke:
   npm exec -- tsc
   node dist/index.js
 
-verify:
-  just lint
-  just typecheck
-  just build
-  just test
-  just smoke
+diff-check:
   git diff --check
+
+verify: lint typecheck build test smoke diff-check
 
 dev:
   npm exec -- tsc
@@ -190,7 +187,9 @@ Mappings:
 - Build: `just build`, which runs `tsc`.
 - Tests: `just test [target]`, which compiles then runs `node --test`.
 - Smoke: `just smoke`, which compiles then runs the hello-world program.
-- Full verification: `just verify`.
+- Diff hygiene: `just diff-check`, which runs `git diff --check`.
+- Full verification: `just verify`, which depends on `lint`, `typecheck`,
+  `build`, `test`, `smoke`, and `diff-check`.
 ````
 
 ## Verify
@@ -208,7 +207,8 @@ Expected result:
 
 - `just setup` installs dependencies using `.local/npm-cache`.
 - `just lint src/index.ts` proves focused argument passing.
-- `just verify` runs lint, typecheck, build, tests, smoke, and diff hygiene.
+- `just verify` runs lint, typecheck, build, tests, smoke, and diff hygiene
+  through native Just dependencies.
 
 ## Lessons For GSU
 

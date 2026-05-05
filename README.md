@@ -80,6 +80,13 @@ rules, install or sync dependencies through the chosen package manager, and map
 project concepts such as lint, typecheck, test, build, smoke, docs, and run-app
 commands in `AGENTS.md`.
 
+For Just command contracts, prefer native recipe dependencies for ordered
+recipe composition. For example, write
+`verify: lint typecheck static test smoke diff-check` instead of recursively
+calling `just lint`, `just typecheck`, and so on inside `verify`. In Just,
+dependency order is meaningful: dependencies run before the depending recipe,
+and in the listed order. This is not Make-style file freshness analysis.
+
 Gest descriptions record intent. Non-trivial completed leaf tasks should get a
 task note before completion:
 

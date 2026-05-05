@@ -414,12 +414,10 @@ smoke:
   npm exec -- tsc
   node dist/index.js
 
-verify:
-  just lint
-  just typecheck
-  just build
-  just smoke
+diff-check:
   git diff --check
+
+verify: lint typecheck build smoke diff-check
 JUST
 cat >> AGENTS.md <<'MD'
 
@@ -433,6 +431,7 @@ just lint [path]
 just typecheck
 just build
 just smoke
+just diff-check
 just verify
 git diff --check
 ```
@@ -444,7 +443,9 @@ Mappings:
 - Typecheck: `just typecheck`, which runs `tsc --noEmit`.
 - Build: `just build`, which runs `tsc`.
 - Smoke: `just smoke`, which compiles then runs the hello-world program.
-- Full verification: `just verify`.
+- Diff hygiene: `just diff-check`, which runs `git diff --check`.
+- Full verification: `just verify`, which depends on `lint`, `typecheck`,
+  `build`, `smoke`, and `diff-check`.
 MD
 git add .agents AGENTS.md docs tools Justfile
 git commit -m "chore: install gest codex skills and command contract"

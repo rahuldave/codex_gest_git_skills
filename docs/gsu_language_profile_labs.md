@@ -63,6 +63,11 @@ test target="tests":
 
 smoke:
   uv run python hello.py
+
+diff-check:
+  git diff --check
+
+verify: lint typecheck build test smoke diff-check
 ```
 
 Lesson: prefer `uv run python -m ...` forms when invoking Python tools so the
@@ -119,6 +124,11 @@ test target="":
 smoke:
   npm exec -- tsc
   node dist/index.js
+
+diff-check:
+  git diff --check
+
+verify: lint typecheck build test smoke diff-check
 ```
 
 Lessons: include `@types/node` for Node-targeted TypeScript; lint source/config
@@ -170,6 +180,11 @@ test target="./...":
 
 smoke:
   GOCACHE="$PWD/.local/go-build" GOMODCACHE="$PWD/.local/go-mod" go run .
+
+diff-check:
+  git diff --check
+
+verify: fmt lint typecheck build test smoke diff-check
 ```
 
 Lesson: `GOCACHE` must be an absolute path; `$PWD/.local/go-build` works well
@@ -220,6 +235,11 @@ test target="":
 
 smoke:
   cargo run --quiet
+
+diff-check:
+  git diff --check
+
+verify: fmt lint typecheck build test smoke diff-check
 ```
 
 Lesson: the toolchain is external, but the repo can pin it with

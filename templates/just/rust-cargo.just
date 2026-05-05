@@ -16,10 +16,7 @@ test target="":
 docs:
   cargo doc --no-deps
 
-verify:
-  just fmt
-  just lint
-  just typecheck
-  just build
-  just test
+diff-check:
   git diff --check
+
+verify: fmt lint typecheck build test diff-check

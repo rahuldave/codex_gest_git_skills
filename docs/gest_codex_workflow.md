@@ -674,6 +674,18 @@ exists. Never include Gest IDs in commit messages.
 
 Replace this section in each target repository with the project-specific command
 contract. Prefer `just` targets when present, and document target arguments.
+When creating or changing Just recipes, consult:
+
+- Just dependencies: https://just.systems/man/en/dependencies.html
+- Just skill reference: https://raw.githubusercontent.com/casey/just/refs/heads/master/skills/just/SKILL.md
+
+For Just, dependency order is meaningful: dependencies run before the recipe
+that depends on them, and in the listed order. Prefer native Just dependencies
+for ordered recipe composition, such as
+`verify: lint typecheck static test smoke diff-check`, instead of recursively
+calling `just` inside a recipe. Dependencies with the same arguments run once
+per `just` invocation. This is not Make-style file freshness analysis.
+
 Common checks include:
 
 ```bash

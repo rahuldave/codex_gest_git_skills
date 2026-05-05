@@ -27,3 +27,9 @@ with existing project files so local conventions are preserved.
 
 `gsu` should record the final command contract in `AGENTS.md` after composing
 or adapting these snippets.
+
+When composing `verify` or other aggregate Just recipes, use native Just
+dependencies in the order they should run, for example
+`verify: lint typecheck build test diff-check`. Just dependencies run before
+the depending recipe and in the listed order; they are ordered recipe
+composition, not Make-style file freshness analysis.
