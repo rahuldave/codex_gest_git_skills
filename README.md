@@ -1,6 +1,6 @@
-# Codex Gest Git Skills
+# Agent Gest Git Skills
 
-Reusable Codex skills, agent instructions, and small tools for working with
+Reusable agent skills, agent instructions, and small tools for working with
 Gest-tracked projects in Git repositories.
 
 This repository is meant to be mixed into other repos. It keeps the workflow
@@ -9,7 +9,7 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
 
 ## What Is Included
 
-- `.agents/skills/g*`: project-local Codex skills for setup, Gest workflow routing,
+- `.agents/skills/g*`: project-local agent skills for setup, Gest workflow routing,
   planning, implementation, review, formatting, testing, docs, promotion,
   pull request acceptance, orchestration, and commits.
 - `AGENTS.template.md`: starter agent instructions to copy into a target repo.
@@ -124,5 +124,5 @@ After creating a GitHub token/session:
 
 ```bash
 gh auth login -h github.com
-gh repo create codex_gest_git_skills --public --source . --remote origin --push
+gh repo create agent_gest_git_skills --public --source . --remote origin --push
 ```
