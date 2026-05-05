@@ -6,7 +6,8 @@ usage() {
 Usage: scripts/sync_g_skills.sh [--dry-run] <target-repo>
 
 Sync reusable g* skills from this repository into a target repository's
-.agents/skills directory. Non-g* skills in the target are left alone.
+.agents/skills directory, plus shared docs referenced by those skills.
+Non-g* skills in the target are left alone.
 USAGE
 }
 
@@ -28,6 +29,7 @@ repo_root="$(cd "$script_dir/.." && pwd)"
 source_skills="$repo_root/.agents/skills"
 target_repo="$(cd "$1" && pwd)"
 target_skills="$target_repo/.agents/skills"
+target_docs="$target_repo/docs"
 
 if [[ "$dry_run_enabled" -eq 0 ]]; then
   mkdir -p "$target_skills"
@@ -46,5 +48,15 @@ for source_dir in "$source_skills"/g*; do
   fi
   rsync "${rsync_args[@]}" "$source_dir/" "$target_skills/$skill_name/"
 done
+
+if [[ "$dry_run_enabled" -eq 0 ]]; then
+  mkdir -p "$target_docs"
+elif [[ ! -d "$target_docs" ]]; then
+  echo "Would create $target_docs"
+fi
+
+if [[ "$dry_run_enabled" -eq 0 || -d "$target_docs" ]]; then
+  rsync "${rsync_args[@]}" "$repo_root/docs/just_command_contract.md" "$target_docs/"
+fi
 
 echo "Synced reusable g* skills to $target_skills"
