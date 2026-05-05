@@ -163,6 +163,9 @@ At durable checkpoints, Codex should also:
 - regenerate a focused graph for the latest relevant iteration
 - run the explicit GitHub promotion/sync decision for development parents and
   iterations
+- after pushing a non-mainline branch, create/update the PR, run `gpa`, report
+  the PR review, and ask before merge unless the user already explicitly asked
+  for that merge
 - run an explicit review pass after every code change
 - report graph paths, commit hashes, review status, and GitHub issue decision
 

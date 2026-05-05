@@ -668,6 +668,13 @@ Fix: after every Codex-created commit, run `git status --short --branch`, push
 if there is an upstream and the work is not intentionally local-only, or record
 the explicit no-push reason.
 
+Mistake: pushing a branch and treating the push as the end of review.
+
+Fix: after pushing a non-mainline branch, create or update its pull request, run
+`gpa`, report the PR review findings/state to the user, and ask whether to merge.
+Only merge immediately when the user explicitly asked for that merge in the
+current turn.
+
 Mistake: completing Gest leaves without a note.
 
 Fix: add `Done` and `Verification` notes before completing non-trivial leaves.
@@ -701,6 +708,11 @@ to merge
 
 When in doubt, ask Codex to explain the proposed branch model and execution
 model before it edits files.
+
+After a pushed non-mainline branch, Codex should not wait for the user to notice
+the branch on GitHub. It should create or update the PR, run `gpa`, report the
+review packet, and ask whether to merge unless the user already asked for that
+merge in the current turn.
 
 ## PR Acceptance With Gest Context
 

@@ -242,6 +242,12 @@ When Codex creates a commit, make a separate push/sync decision: verify
 was not requested, or record the exact no-push reason. GitHub issue promotion
 and `git push` are different decisions.
 
+When Codex pushes changes to a branch other than the repository's mainline
+branch, do not stop at push. Create or update the PR for that branch, route the
+PR through `gpa`, report the PR review findings/state to the user, and ask
+whether to merge. Only merge without another question when the user explicitly
+asked for the merge in the current turn.
+
 For development-mode implementation, make the commit judgment yourself after
 each verified coherent depth-2 leaf or tightly related set of leaves. Prefer a
 commit before claiming the next implementation slice when the completed work
@@ -264,6 +270,9 @@ At every durable checkpoint, run the cleanup that future agents need:
   `github.issue`/`github.url`, or record why it was not promoted
 - verify push state for each Codex-created commit; do not finish a checkpoint
   with an unmentioned `ahead` branch
+- after pushing a non-mainline branch, create/update the PR, run `gpa`, report
+  the PR review, and ask before merge unless the user already explicitly asked
+  for that merge
 - run `grv` after every code change before task completion, even for quick
   development without a pull request
 - report graph paths, commit hashes, push status, review status, and GitHub
