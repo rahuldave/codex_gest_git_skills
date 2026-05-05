@@ -11,3 +11,8 @@ typecheck:
 
 test target="tests":
   uv run python -m pytest {{target}}
+
+diff-check:
+  git diff --check
+
+verify: lint typecheck test diff-check

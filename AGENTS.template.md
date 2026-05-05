@@ -164,6 +164,19 @@ Document command arguments here. For `just`, target parameters are passed
 positionally, for example `just lint src/foo.ts`, `just test tests/foo.test.ts`,
 or `just dev 3000`.
 
+When changing Just recipes, consult the Just manual rather than treating it like
+Make. The key reference for recipe ordering is:
+
+- Just dependencies: https://just.systems/man/en/dependencies.html
+- Just skill reference: https://raw.githubusercontent.com/casey/just/refs/heads/master/skills/just/SKILL.md
+
+For Just, dependency order is meaningful: dependencies run before the recipe
+that depends on them, and in the listed order. Use native recipe dependencies
+when one recipe is an ordered composition of other recipes, such as
+`verify: lint typecheck static test smoke diff-check`. Dependencies with the
+same arguments run once per `just` invocation. This is ordered recipe
+composition, not Make-style file freshness analysis.
+
 Use `gfm` for formatting, linting, typechecking, compile/static checks, and
 diff hygiene. Use `gte` for unit tests, API regression tests, smoke checks, and
 integration tests. Use `gdo` to check and update user-facing docs,

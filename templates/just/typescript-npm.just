@@ -15,3 +15,8 @@ build:
 test target="":
   npm exec -- tsc
   node --test dist/*.test.js {{target}}
+
+diff-check:
+  git diff --check
+
+verify: lint typecheck build test diff-check

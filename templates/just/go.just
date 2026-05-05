@@ -19,11 +19,7 @@ docs:
 smoke:
   GOCACHE="$PWD/.local/go-build" GOMODCACHE="$PWD/.local/go-mod" go run .
 
-verify:
-  just fmt
-  just lint
-  just typecheck
-  just build
-  just test
-  just smoke
+diff-check:
   git diff --check
+
+verify: fmt lint typecheck build test smoke diff-check

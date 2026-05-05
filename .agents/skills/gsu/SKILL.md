@@ -360,6 +360,29 @@ just dev 8001
 
 Use quotes when passing an argument that contains spaces.
 
+## Just Recipe Composition
+
+When creating or updating a `Justfile`, consult:
+
+- Just dependencies: https://just.systems/man/en/dependencies.html
+- Just skill reference: https://raw.githubusercontent.com/casey/just/refs/heads/master/skills/just/SKILL.md
+
+For Just, dependency order is meaningful: dependencies run before the recipe
+that depends on them, and in the listed order. Use native recipe dependencies
+for ordered aggregate recipes, such as:
+
+```just
+diff-check:
+  git diff --check
+
+verify: lint typecheck static test smoke diff-check
+```
+
+Prefer this over recursively calling `just lint`, `just typecheck`, and so on
+inside `verify`. Dependencies with the same arguments run once per `just`
+invocation. This is ordered recipe composition, not Make-style file freshness
+analysis.
+
 ## Deliverable
 
 Report:
