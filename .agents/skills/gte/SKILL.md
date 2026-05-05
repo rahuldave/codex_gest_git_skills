@@ -51,11 +51,15 @@ gest search "Follow-up <feature/module>" --all --json --limit 20
 6. Run the broader project test suite.
 7. Run smoke checks when they exercise cross-system wiring.
 8. Run browser spot checks for frontend, UI, or interaction changes.
-9. Run durable integration/browser checks when the project contract defines
+9. Before browser-based checks, ensure the app is served through the project
+   run-app contract, commonly `just dev [port]`, or confirm that an existing
+   server is already running.
+10. Run durable integration/browser checks when the project contract defines
    them or the flow needs regression coverage.
-10. Report commands and results. If a layer cannot run, say exactly why.
+11. Report commands and results. If a layer cannot run, say exactly why.
 
-Prefer `just` targets when the project contract defines them. Typical shapes
+Prefer `just` targets when the project contract defines them. For the reusable
+Just contract shape, see `docs/just_command_contract.md`. Typical shapes
 include:
 
 ```bash
@@ -63,6 +67,7 @@ just test [target]
 just regression [target]
 just integration [flow-or-target]
 just smoke
+just dev [port]
 just browser [url-or-flow]
 ```
 

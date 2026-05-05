@@ -214,6 +214,10 @@ gest task claim --as codex <leaf-id> --quiet
 - `gdo`: update and verify docs.
 - `gcm`: commit.
 
+For Just-based command contracts, use `docs/just_command_contract.md` as the
+reusable reference and let project-specific details live in the target
+repository's `AGENTS.md` and `Justfile`.
+
 ## Commit Cadence
 
 Committing is not a Gest task by itself. Do not create tasks whose only purpose

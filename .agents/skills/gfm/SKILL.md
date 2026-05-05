@@ -20,7 +20,8 @@ runtime tests or documentation checks; route those to `gte` and `gdo`.
 6. Report every command run and whether it passed.
 
 Use the target repository's project-specific command contract. Prefer `just`
-targets when `AGENTS.md` maps them. Common concepts include:
+targets when `AGENTS.md` maps them. For the reusable Just command-contract
+model, see `docs/just_command_contract.md`. Common concepts include:
 
 ```bash
 just fmt [path]

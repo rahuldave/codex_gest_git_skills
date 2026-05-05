@@ -122,8 +122,9 @@ or credentials.
 ## Command Contract
 
 Prefer `just` targets when present. `AGENTS.md` should say which command maps
-to each workflow concept and how arguments are passed. A typical contract might
-include:
+to each workflow concept and how arguments are passed. See
+`docs/just_command_contract.md` for the reusable Just command-contract model. A
+typical contract might include:
 
 ```text
 Format: just fmt [path]
@@ -139,6 +140,12 @@ Browser spot check: just browser [url-or-flow]
 Integration flow: just integration [flow]
 Docs check: just docs
 ```
+
+For browser-based integration tests or spot checks, include both sides of the
+contract: a run-app target such as `just dev [port]`, and a browser target such
+as `just browser [url-or-flow]`. Browser checks should either start from the
+documented run-app target or explicitly confirm that the expected server is
+already running.
 
 The reusable `gfm`, `gte`, and `gdo` skills should read this project contract
 instead of hard-coding language tools.

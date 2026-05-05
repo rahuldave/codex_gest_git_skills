@@ -14,6 +14,8 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
   pull request acceptance, orchestration, and commits.
 - `AGENTS.template.md`: starter agent instructions to copy into a target repo.
 - `docs/gest_codex_workflow.md`: the full workflow playbook.
+- `docs/just_command_contract.md`: reusable Justfile and `AGENTS.md` command
+  contract guidance.
 - `docs/g_commands_cheatsheet.md`: quick user-facing guide to `/gtw` and the
   other g-command skills.
 - `docs/gsu_typescript_hello_world.md`: disposable setup lab for a tiny
@@ -86,6 +88,13 @@ recipe composition. For example, write
 calling `just lint`, `just typecheck`, and so on inside `verify`. In Just,
 dependency order is meaningful: dependencies run before the depending recipe,
 and in the listed order. This is not Make-style file freshness analysis.
+
+To update vendored `g*` skills in a target repository while preserving local
+non-`g*` skills, run:
+
+```bash
+scripts/sync_g_skills.sh /path/to/target-repo
+```
 
 Gest descriptions record intent. Non-trivial completed leaf tasks should get a
 task note before completion:
