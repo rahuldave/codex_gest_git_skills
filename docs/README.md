@@ -20,4 +20,5 @@ The beginner tutorial is the source of truth for the supported review shapes:
 3. GitButler stacked PRs for dependent slices
 4. physical git worktrees for independent slices
 
-Only the third tutorial step uses GitButler as the main tool.
+It also includes a deterministic tag classification and ast-grep dependency
+check. Only the third review-shape step uses GitButler as the main tool.

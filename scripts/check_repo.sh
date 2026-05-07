@@ -60,6 +60,7 @@ required_text=(
   "ordinary git multi-commit PR"
   "GitButler stacked PRs"
   "physical git worktrees"
+  "Tags And ast-grep Dependency Check"
   "gh repo delete --yes"
   "After the agent finishes, check:"
   "classification.tags.reviewed"

@@ -9,6 +9,7 @@ You will learn:
 2. ordinary git multi-commit PR
 3. GitButler stacked PRs for dependent slices
 4. physical git worktrees for independent parallel slices
+5. tag classification and ast-grep dependency checks before code edits
 
 Only step 3 uses GitButler as the main tool.
 
@@ -356,7 +357,74 @@ Commands it should not have used:
 - GitButler parallel lanes
 - two write agents in one GitButler workspace
 
-## Step 5: Cleanup
+## Step 5: Tags And ast-grep Dependency Check
+
+What this step teaches:
+
+Before the agent edits code, it should classify the task with project tags and
+run ast-grep against the semantic contract that is changing. If another surface
+depends on that contract, the agent should expand the task or create a tagged
+child task before implementation.
+
+Local fixture:
+
+```text
+/tmp/agent-gest-git-tutorial/tag-ast-grep
+```
+
+Ask the agent:
+
+```text
+Run tutorial step 5: tag classification and ast-grep dependency check.
+
+Create `/tmp/agent-gest-git-tutorial/tag-ast-grep/src`.
+
+Create `src/colors.js` containing a function named
+`countOrProbabilityColorScale`.
+Create `src/histogram.js` that calls `countOrProbabilityColorScale`.
+Create `src/pill.js` that calls `countOrProbabilityColorScale`.
+
+Before editing anything, classify the requested change "change histogram colors
+for low-count bins" with these tags:
+- selected existing tag: `count-or-probability-coloring`
+- selected existing tag: `histogram-colors`
+- selected existing tag: `probability-pill-colors`
+- rejected near miss: `reader-ui`
+
+Then run:
+
+`ast-grep run --lang javascript --pattern 'countOrProbabilityColorScale($$$)' --json=compact src`
+
+The dependency impact should find both:
+- `src/histogram.js`
+- `src/pill.js`
+
+Do not change the fixture in this step. Write the selected tags, rejected tag,
+ast-grep command, and dependency-impact conclusion to
+`/tmp/agent-gest-git-tutorial/logs/05-tag-ast-grep.log`.
+```
+
+After the agent finishes, check:
+
+```bash
+rg "count-or-probability-coloring|histogram.js|pill.js|reader-ui" \
+  /tmp/agent-gest-git-tutorial/logs/05-tag-ast-grep.log
+```
+
+Expected:
+
+```text
+count-or-probability-coloring
+histogram.js
+pill.js
+reader-ui
+```
+
+The agent should report that a histogram-color implementation must also account
+for the probability-pill color surface, or create a child task tagged with the
+same semantic dependency before completion.
+
+## Step 6: Cleanup
 
 Ask the agent:
 
