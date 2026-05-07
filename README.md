@@ -13,21 +13,9 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
   planning, implementation, review, formatting, testing, docs, promotion,
   pull request acceptance, orchestration, and commits.
 - `AGENTS.template.md`: starter agent instructions to copy into a target repo.
-- `docs/gest_codex_workflow.md`: the full workflow playbook.
-- `docs/just_command_contract.md`: reusable Justfile and `AGENTS.md` command
-  contract guidance.
-- `docs/g_commands_cheatsheet.md`: quick user-facing guide to `/gtw` and the
-  other g-command skills.
-- `docs/gsu_typescript_hello_world.md`: disposable setup lab for a tiny
-  TypeScript project using `gsu` concepts and `just` command contracts.
-- `docs/gsu_language_profile_labs.md`: verified setup labs for Python/uv,
-  TypeScript/npm, Go, and Rust/Cargo profiles.
-- `docs/gest_gitbutler_workflow_guide.md`: user-facing setup and practice guide
-  for Gest, the g skills, GitButler stacks, and physical worktrees.
-- `docs/live_github_gitbutler_workflow_tutorial.md`: prompt-first live GitHub tutorial
-  for GitButler branches, multi-commit branches, stacked PRs, and physical worktree PRs.
-- `docs/tag_dependency_workflow.md`: tag classification and `ast-grep`
-  dependency-impact workflow for Gest task creation and code changes.
+- `docs/README.md`: documentation map.
+- `docs/TUTORIAL.md`: the deterministic beginner tutorial. Start here.
+- `docs/*.md`: reference docs and setup examples for users who need details.
 - `tools/gest_mermaid_graph.py`: optional read-only Gest SQLite exporter that
   writes clickable Mermaid/HTML relationship graphs.
 - `scripts/install.sh`: copy-based installer for target repos, including hooks by default.
@@ -61,16 +49,13 @@ name, verification commands, and GitHub policy.
 Use `templates/` as `gsu` inputs when creating `.gitignore`, `.envrc`,
 `.env.example`, or `Justfile` command contracts.
 
-For a small setup-first example, read
-[`docs/gsu_typescript_hello_world.md`](docs/gsu_typescript_hello_world.md).
-For broader language-profile coverage, read
-[`docs/gsu_language_profile_labs.md`](docs/gsu_language_profile_labs.md).
+If you are new, read [`docs/TUTORIAL.md`](docs/TUTORIAL.md) next. It is the
+only beginner tutorial. It uses ordinary git for simple PRs, GitButler only for
+stacked dependent PRs, and physical git worktrees for independent parallel
+slices.
 
-To learn the workflow by hand, read
-[`docs/gest_gitbutler_workflow_guide.md`](docs/gest_gitbutler_workflow_guide.md)
-and run its disposable-repo lab. It walks through Gest setup, skill
-responsibilities, branch/stack/worktree decisions, GitButler sequential stack
-practice, and physical worktree integration.
+For a map of the remaining reference docs, read
+[`docs/README.md`](docs/README.md).
 
 ## Workflow Shape
 
