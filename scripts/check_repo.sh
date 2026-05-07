@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+mode="${1:-all}"
+
+required_files=(
+  "README.md"
+  "AGENTS.template.md"
+  "CLAUDE.md"
+  "Justfile"
+  ".claude/settings.json"
+  ".codex/hooks.json"
+  "docs/gest_codex_workflow.md"
+  "docs/gest_gitbutler_workflow_guide.md"
+  "docs/live_github_gitbutler_workflow_tutorial.md"
+  "docs/tag_dependency_workflow.md"
+  "docs/g_commands_cheatsheet.md"
+  "docs/just_command_contract.md"
+  "scripts/install.sh"
+  "scripts/sync_g_skills.sh"
+  "scripts/run_tag_dependency_agent_dry_run.sh"
+  "templates/README.md"
+  "tools/gest_mermaid_graph.py"
+)
+
+for file in "${required_files[@]}"; do
+  if [ ! -f "$repo_root/$file" ]; then
+    echo "missing required file: $file" >&2
+    exit 1
+  fi
+done
+
+for skill in gbs gcm gdo gfm gim gis gor gpa gpl gpr grv gsp gsu gte gtw; do
+  if [ ! -f "$repo_root/.agents/skills/$skill/SKILL.md" ]; then
+    echo "missing g skill: $skill" >&2
+    exit 1
+  fi
+done
+
+while IFS= read -r script; do
+  bash -n "$script"
+done < <(find "$repo_root/scripts" "$repo_root/.claude/hooks" "$repo_root/.codex/hooks" -type f -name '*.sh' | sort)
+
+if command -v python3 >/dev/null 2>&1; then
+  python3 -m json.tool "$repo_root/.claude/settings.json" >/dev/null
+  python3 -m json.tool "$repo_root/.codex/hooks.json" >/dev/null
+fi
+
+required_text=(
+  "but setup"
+  "but branch new"
+  "but branch new --anchor"
+  "but commit"
+  "but push"
+  "but pr new"
+  "gh repo delete --yes"
+  "Prompt:"
+  "classification.tags.reviewed"
+  "impact.ast_grep.required"
+  "count-or-probability-coloring"
+  "probability-pill-colors"
+  "tag-dependency-dry-run"
+  "ast-grep run"
+  "git worktree add"
+  "GitButler mode-strict"
+  "GEST_VCS_EXECUTION=git-worktrees"
+)
+
+for needle in "${required_text[@]}"; do
+  if ! grep -R "$needle" "$repo_root/AGENTS.template.md" "$repo_root/README.md" "$repo_root/docs" "$repo_root/.agents/skills" >/dev/null; then
+    echo "missing required GitButler workflow text: $needle" >&2
+    exit 1
+  fi
+done
+
+claude_deny="$(printf '{"command":"git commit -m nope"}' | "$repo_root/.claude/hooks/raw-git-write-guard.sh" || true)"
+if ! printf '%s' "$claude_deny" | grep -q 'permissionDecision'; then
+  echo "Claude raw git guard did not deny git commit" >&2
+  exit 1
+fi
+
+claude_allow="$(printf '{"command":"but commit demo -m ok"}' | "$repo_root/.claude/hooks/raw-git-write-guard.sh" || true)"
+if [ -n "$claude_allow" ]; then
+  echo "Claude raw git guard denied but commit" >&2
+  exit 1
+fi
+
+codex_deny="$(printf '{"tool_input":{"command":"git commit -m nope"}}' | "$repo_root/.codex/hooks/raw-git-write-guard.sh" || true)"
+if ! printf '%s' "$codex_deny" | grep -q 'permissionDecision'; then
+  echo "Codex raw git guard did not deny git commit" >&2
+  exit 1
+fi
+
+codex_allow="$(printf '{"tool_input":{"command":"but commit demo -m ok"}}' | "$repo_root/.codex/hooks/raw-git-write-guard.sh" || true)"
+if [ -n "$codex_allow" ]; then
+  echo "Codex raw git guard denied but commit" >&2
+  exit 1
+fi
+
+claude_worktree_allow="$(printf '{"command":"GEST_VCS_EXECUTION=git-worktrees git worktree add -b demo /tmp/demo main"}' | "$repo_root/.claude/hooks/raw-git-write-guard.sh" || true)"
+if [ -n "$claude_worktree_allow" ]; then
+  echo "Claude raw git guard denied explicit physical worktree command" >&2
+  exit 1
+fi
+
+codex_worktree_allow="$(printf '{"tool_input":{"command":"GEST_VCS_EXECUTION=git-worktrees git worktree add -b demo /tmp/demo main"}}' | "$repo_root/.codex/hooks/raw-git-write-guard.sh" || true)"
+if [ -n "$codex_worktree_allow" ]; then
+  echo "Codex raw git guard denied explicit physical worktree command" >&2
+  exit 1
+fi
+
+if [ "$mode" = "--diff" ]; then
+  git -C "$repo_root" diff --check
+fi
+
+echo "repository checks passed"

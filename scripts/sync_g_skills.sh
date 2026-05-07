@@ -3,60 +3,111 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/sync_g_skills.sh [--dry-run] <target-repo>
+Usage: scripts/sync_g_skills.sh [--dry-run] [--hooks] <target-repo>
 
-Sync reusable g* skills from this repository into a target repository's
-.agents/skills directory, plus shared docs referenced by those skills.
-Non-g* skills in the target are left alone.
+Sync reusable g* skills from this repository into a target repository. Non-g
+skills in the target are left alone. Shared docs/templates/tools are refreshed.
+Hooks install by default through scripts/install.sh; pass --hooks here to refresh
+.claude and .codex hook adapters in an existing repository.
 USAGE
 }
 
-rsync_args=(-a --delete)
-dry_run_enabled=0
-if [[ "${1:-}" == "--dry-run" ]]; then
-  rsync_args+=(--dry-run)
-  dry_run_enabled=1
-  shift
-fi
+delete_rsync_args=(-a --delete)
+merge_rsync_args=(-a)
+dry_run=0
+sync_hooks=0
 
-if [[ $# -ne 1 || "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-  usage
-  exit 2
-fi
-
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-repo_root="$(cd "$script_dir/.." && pwd)"
-source_skills="$repo_root/.agents/skills"
-target_repo="$(cd "$1" && pwd)"
-target_skills="$target_repo/.agents/skills"
-target_docs="$target_repo/docs"
-
-if [[ "$dry_run_enabled" -eq 0 ]]; then
-  mkdir -p "$target_skills"
-elif [[ ! -d "$target_skills" ]]; then
-  echo "Would create $target_skills"
-fi
-
-for source_dir in "$source_skills"/g*; do
-  [[ -d "$source_dir" ]] || continue
-  skill_name="$(basename "$source_dir")"
-  if [[ "$dry_run_enabled" -eq 0 ]]; then
-    mkdir -p "$target_skills/$skill_name"
-  elif [[ ! -d "$target_skills/$skill_name" ]]; then
-    echo "Would create $target_skills/$skill_name"
-    continue
-  fi
-  rsync "${rsync_args[@]}" "$source_dir/" "$target_skills/$skill_name/"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      dry_run=1
+      delete_rsync_args+=(--dry-run)
+      merge_rsync_args+=(--dry-run)
+      shift
+      ;;
+    --hooks)
+      sync_hooks=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      usage >&2
+      exit 64
+      ;;
+    *)
+      break
+      ;;
+  esac
 done
 
-if [[ "$dry_run_enabled" -eq 0 ]]; then
-  mkdir -p "$target_docs"
-elif [[ ! -d "$target_docs" ]]; then
-  echo "Would create $target_docs"
+if [ "$#" -ne 1 ]; then
+  usage >&2
+  exit 64
 fi
 
-if [[ "$dry_run_enabled" -eq 0 || -d "$target_docs" ]]; then
-  rsync "${rsync_args[@]}" "$repo_root/docs/just_command_contract.md" "$target_docs/"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+target_arg="$1"
+
+if [ ! -d "$target_arg" ]; then
+  echo "Target does not exist: $target_arg" >&2
+  exit 66
+fi
+target="$(cd "$target_arg" && pwd)"
+
+ensure_dir() {
+  dir="$1"
+  if [ "$dry_run" -eq 0 ]; then
+    mkdir -p "$dir"
+  elif [ ! -d "$dir" ]; then
+    echo "Would create $dir"
+    return 1
+  fi
+}
+
+ensure_dir "$target/.agents/skills" || true
+ensure_dir "$target/docs" || true
+ensure_dir "$target/templates" || true
+ensure_dir "$target/tools" || true
+
+for source_dir in "$repo_root"/.agents/skills/g*; do
+  [ -d "$source_dir" ] || continue
+  skill_name="$(basename "$source_dir")"
+  if ensure_dir "$target/.agents/skills/$skill_name"; then
+    rsync "${delete_rsync_args[@]}" "$source_dir/" "$target/.agents/skills/$skill_name/"
+  fi
+done
+
+if [ "$dry_run" -eq 0 ] || [ -d "$target/docs" ]; then
+  rsync "${merge_rsync_args[@]}" "$repo_root/docs/" "$target/docs/"
+fi
+if [ "$dry_run" -eq 0 ] || [ -d "$target/templates" ]; then
+  rsync "${delete_rsync_args[@]}" "$repo_root/templates/" "$target/templates/"
+fi
+if [ "$dry_run" -eq 0 ] || [ -d "$target/tools" ]; then
+  rsync "${merge_rsync_args[@]}" "$repo_root/tools/gest_mermaid_graph.py" "$target/tools/gest_mermaid_graph.py"
 fi
 
-echo "Synced reusable g* skills to $target_skills"
+if [ "$sync_hooks" -eq 1 ]; then
+  ensure_dir "$target/.claude/hooks" || true
+  ensure_dir "$target/.codex/hooks" || true
+  if [ "$dry_run" -eq 0 ] || [ -d "$target/.claude/hooks" ]; then
+    rsync "${merge_rsync_args[@]}" "$repo_root/.claude/hooks/" "$target/.claude/hooks/"
+    rsync "${merge_rsync_args[@]}" "$repo_root/.claude/settings.json" "$target/.claude/settings.json"
+  fi
+  if [ "$dry_run" -eq 0 ] || [ -d "$target/.codex/hooks" ]; then
+    rsync "${merge_rsync_args[@]}" "$repo_root/.codex/hooks/" "$target/.codex/hooks/"
+    rsync "${merge_rsync_args[@]}" "$repo_root/.codex/hooks.json" "$target/.codex/hooks.json"
+  fi
+fi
+
+echo "Synced reusable Git/GitButler g* skills to $target/.agents/skills"
+if [ "$sync_hooks" -eq 0 ]; then
+  echo "Hook adapters were not synced; rerun with --hooks to refresh .claude/.codex."
+fi

@@ -73,3 +73,7 @@ just browser [url-or-flow]
 
 If no command contract exists yet, inspect the project manifests and propose or
 route to `gsu` to establish one.
+
+## Testing Dependency Impact
+
+Inspect tag/dependency notes from `docs/tag_dependency_workflow.md`; tests must cover dependers found by semantic tags or `ast-grep`, not only the file that was directly edited. Smoke checks alone are not enough for changed callable code or shared contracts.

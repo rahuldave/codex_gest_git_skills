@@ -47,3 +47,7 @@ For workflow changes, review VCS safety as behavior: flag any instruction that
 allows raw `git commit`/`git switch`/`git checkout` in GitButler mode, any plan
 that launches parallel write agents in one GitButler workspace, or any stacked
 branch flow that lacks bottom-up integration/review guidance.
+
+## Tag And Dependency Findings
+
+Review the current changes against `docs/tag_dependency_workflow.md`. If code contracts changed, inspect the `ast-grep` patterns that were run and the dependers they found. Treat missing `ast-grep` dependency-impact checks, unhandled dependent surfaces, or missing focused tests for found dependers as review findings.

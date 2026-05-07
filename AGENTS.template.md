@@ -24,6 +24,23 @@ request, it must say why in the final response.
 Replace this section with project-specific invariants, runtime commands, and
 verification commands.
 
+
+## Tag And Dependency Impact
+
+Before creating or splitting Gest tasks, collect the existing project tag
+vocabulary and classify the work against it. Record selected existing tags, new
+dynamic tags, and near-miss rejected tags when useful. Store machine-readable
+metadata such as `classification.tags.reviewed=true`,
+`classification.tags.new=<comma-separated-new-tags>`, and
+`impact.ast_grep.required=true|false`. Use `docs/tag_dependency_workflow.md` for
+the exact workflow.
+
+For code-facing changes, identify changed semantic contracts and use `ast-grep`
+to inspect dependers. If a task changes one surface of a coupled concept, expand
+the task or create/link a child task for the other surface before completion.
+Completion notes should include `Tag classification:` and `Dependency impact:`
+for code-facing work.
+
 ## Gest Workflow
 
 Before creating new tasks, search and inspect existing work:
@@ -59,7 +76,9 @@ branch or stack afterward.
 When GitButler owns the workspace, use current `but` CLI write commands such as
 `but branch new`, `but stage`, `but commit`, `but push`, and `but pr`. Do not
 use raw `git commit`, `git switch`, `git checkout`, or branch-mutating git
-commands in GitButler mode.
+commands in GitButler mode. If a workflow has explicitly left GitButler mode to
+use physical git worktrees, mark raw worktree commands with
+`GEST_VCS_EXECUTION=git-worktrees`.
 
 For non-trivial completed leaf tasks, add a Gest task note before completion:
 

@@ -141,3 +141,7 @@ another question when the user explicitly asked for that merge in the current
 turn. For reusable workflow/template repo changes, PR creation is mandatory
 after push unless blocked; record the exact blocker instead of leaving only a
 pushed branch.
+
+## Tag And Dependency Context
+
+Before committing reusable workflow or code-facing changes, check related Gest notes for `classification.tags.*` and `impact.ast_grep.*` metadata from `docs/tag_dependency_workflow.md`. Mention important dependency-impact follow-ups in the commit body or PR context when they affect reviewer expectations.

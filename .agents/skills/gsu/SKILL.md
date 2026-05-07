@@ -400,3 +400,7 @@ Report:
 - command contract mappings
 - verification commands run and results
 - open follow-ups, especially missing tests, missing docs, or unset CI/hooks
+
+## Setup For Dependency Impact
+
+When refreshing repository setup, check whether `ast-grep` is available or documented for dependency-impact checks. If setup changes shared tooling, hooks, generated code, or command contracts, use `ast-grep` or targeted structured searches to find dependent surfaces.

@@ -39,3 +39,7 @@ When a repository is GitButler-managed, use `but status` or `but diff` to
 identify branch-owned changes before running mechanical checks. Read-only git
 diff commands are acceptable, but do not use raw git write commands in
 GitButler mode.
+
+## Tag And Dependency Checks
+
+For code-facing changes, `gfm` may include lightweight `ast-grep` syntax or pattern checks from `docs/tag_dependency_workflow.md` when those checks are part of the mechanical contract.

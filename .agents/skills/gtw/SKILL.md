@@ -320,3 +320,15 @@ leaf is not a substitute for a Git checkpoint.
 
 Final responses should include relevant Gest IDs, files changed, verification
 commands/results, and any GitHub issue URL.
+
+## Tag And Dependency Routing
+
+Use `docs/tag_dependency_workflow.md` whenever GTW creates, splits, or expands tasks. GTW should decide selected tags, rejected near misses, new dynamic tags, and whether code-facing work requires an `ast-grep` dependency impact pass. Use metadata such as:
+
+```text
+classification.tags.reviewed=true|false
+classification.tags.new=<comma-separated-new-tags>
+impact.ast_grep.required=true|false
+```
+
+If a selected tag reveals coupled surfaces or the `ast-grep` pass finds dependers, expand the current task or create/link child tasks before implementation finishes.
