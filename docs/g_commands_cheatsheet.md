@@ -5,12 +5,11 @@ Codex/Gest skills installed. Use these commands in natural language, for
 example `/gtw fix the search bug`, `$gtw plan annotation import`, or
 `gcm: commit the verified slice`.
 
-For a setup-focused TypeScript hello-world lab, read
-[`gsu_typescript_hello_world.md`](gsu_typescript_hello_world.md). For verified
-Python, TypeScript, Go, and Rust profile labs, read
-[`gsu_language_profile_labs.md`](gsu_language_profile_labs.md). For the longer
-explanation and hands-on Git/GitButler reproduction lab, read
-[`gest_gitbutler_workflow_guide.md`](gest_gitbutler_workflow_guide.md).
+If you are new to the workflow, read [`TUTORIAL.md`](TUTORIAL.md) first. It is
+the deterministic Git/GitButler tutorial. For a setup-focused TypeScript
+hello-world lab, read [`gsu_typescript_hello_world.md`](gsu_typescript_hello_world.md).
+For verified Python, TypeScript, Go, and Rust profile labs, read
+[`gsu_language_profile_labs.md`](gsu_language_profile_labs.md).
 
 ## Start Here: `/gtw`
 

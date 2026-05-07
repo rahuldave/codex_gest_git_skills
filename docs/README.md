@@ -1,0 +1,23 @@
+# Documentation Map
+
+Start with one document:
+
+- `TUTORIAL.md`: deterministic, step-by-step GitHub tutorial for a new user.
+
+Use the rest only when you need reference material:
+
+- `g_commands_cheatsheet.md`: quick guide to the `g*` skills.
+- `gest_codex_workflow.md`: advanced workflow playbook for agents.
+- `tag_dependency_workflow.md`: tag classification and ast-grep dependency checks.
+- `just_command_contract.md`: stable Justfile command contract guidance.
+- `gsu_typescript_hello_world.md`: tiny setup example.
+- `gsu_language_profile_labs.md`: setup examples for Python, TypeScript, Go, and Rust.
+
+The beginner tutorial is the source of truth for the supported review shapes:
+
+1. ordinary git branch PR
+2. ordinary git multi-commit PR
+3. GitButler stacked PRs for dependent slices
+4. physical git worktrees for independent slices
+
+Only the third tutorial step uses GitButler as the main tool.
