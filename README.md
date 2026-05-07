@@ -31,6 +31,10 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
 - `tools/gest_mermaid_graph.py`: optional read-only Gest SQLite exporter that
   writes clickable Mermaid/HTML relationship graphs.
 - `scripts/install.sh`: copy-based installer for target repos, including hooks by default.
+- `scripts/run_gitbutler_workflow_lab.sh`: local lab for plain branch,
+  multi-commit branch, stacked branch, and physical worktree flows.
+- `scripts/run_gitbutler_github_integration_lab.sh`: live GitHub lab for the
+  same four flows against temporary repos with cleanup.
 - `scripts/run_tag_dependency_agent_dry_run.sh`: local dry run for tag classification plus `ast-grep` dependency expansion.
 - `templates/`: composable setup snippets for `.gitignore`, `.envrc`,
   `.env.example`, and common `Justfile` targets.

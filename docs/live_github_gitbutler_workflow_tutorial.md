@@ -10,6 +10,17 @@ Use this document in two ways:
 - As user prompts to give Codex when you want it to set up and run these flows.
 - As command guidance for agents implementing GitButler-backed Gest work.
 
+The same four live flows are automated by:
+
+```bash
+just integration-live
+```
+
+That command runs `scripts/run_gitbutler_github_integration_lab.sh`, creates
+temporary GitHub repositories, captures command logs plus a tutorial trace under
+`/tmp`, and deletes the repositories at the end unless
+`AGENT_GEST_GITBUTLER_KEEP_GITHUB_REPOS=1` is set.
+
 ## Setup Prompt
 
 Give Codex a setup prompt like this before asking for individual flows:
