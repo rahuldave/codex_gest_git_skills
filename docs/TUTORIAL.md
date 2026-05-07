@@ -13,6 +13,27 @@ You will learn:
 
 Only step 3 uses GitButler as the main tool.
 
+## Latest Live Run
+
+This tutorial was rerun against live temporary GitHub repositories on
+2026-05-07. The historical transcript is
+`docs/live_gitbutler_tutorial_transcript_2026-05-07.md`.
+
+Observed results:
+
+- Step 1 used ordinary git and opened `tutorial/plain` into `main`.
+- Step 2 used ordinary git and opened a two-commit `tutorial/multi` PR into
+  `main`.
+- Step 3 used GitButler for the local stack. With forge auth configured,
+  `but pr new tutorial/stack-base -m ... --json` created the base PR. The child
+  command `but pr new tutorial/stack-child --default --json` returned GitHub
+  `422 Unprocessable Entity`, so the agent used `gh pr create --base
+  tutorial/stack-base --head tutorial/stack-child` for the child PR.
+- Step 4 used physical git worktrees and opened two independent PRs into
+  `main`.
+- Cleanup deleted all four temporary GitHub repositories with
+  `gh repo delete --yes`.
+
 ## What This Tutorial Will Do
 
 The agent will create and later delete these GitHub repositories under your
@@ -241,8 +262,12 @@ Open two PRs:
 - `tutorial/stack-base` into `main`, title `test: stack base flow`
 - `tutorial/stack-child` into `tutorial/stack-base`, title `test: stack child flow`
 
-If `but pr new` cannot run because GitButler forge auth is missing, use
-`gh pr create` after `but push` and record that fallback in the log.
+Prefer `but pr new` after `but push` when GitButler forge auth is configured.
+If the child stack PR fails non-interactively, use `gh pr create` with
+`--base tutorial/stack-base --head tutorial/stack-child` and record the exact
+GitButler error in the log. On the 2026-05-07 live run, the base PR was created
+by `but pr new`, while the child PR required this `gh pr create` fallback after
+GitButler returned GitHub `422 Unprocessable Entity`.
 
 Write all commands and key outputs to
 `/tmp/agent-gest-git-tutorial/logs/03-gitbutler-stack.log`.
