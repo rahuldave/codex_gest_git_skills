@@ -66,3 +66,7 @@ commands. If the phase truly needs parallelism, create physical git worktrees
 first and update metadata to `vcs.execution=git-worktrees` with a distinct
 `vcs.workspace_path` per task. After worktree tasks finish, integrate the
 results back into the intended branch or stack in a separate sequential step.
+
+## Tag And Dependency Orchestration
+
+Before dispatching phase work, make sure each child task has gone through the tag classification pass from `docs/tag_dependency_workflow.md`. For code-facing tasks, workers should know which semantic contracts and `ast-grep` patterns must be checked. Dependent surfaces found by tags or `ast-grep` should be in the same task, a linked child task, or an explicit follow-up before completion.

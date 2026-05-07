@@ -24,9 +24,14 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
   TypeScript/npm, Go, and Rust/Cargo profiles.
 - `docs/gest_gitbutler_workflow_guide.md`: user-facing setup and practice guide
   for Gest, the g skills, GitButler stacks, and physical worktrees.
+- `docs/live_github_gitbutler_workflow_tutorial.md`: prompt-first live GitHub tutorial
+  for GitButler branches, multi-commit branches, stacked PRs, and physical worktree PRs.
+- `docs/tag_dependency_workflow.md`: tag classification and `ast-grep`
+  dependency-impact workflow for Gest task creation and code changes.
 - `tools/gest_mermaid_graph.py`: optional read-only Gest SQLite exporter that
   writes clickable Mermaid/HTML relationship graphs.
-- `scripts/install.sh`: simple copy-based installer for target repos.
+- `scripts/install.sh`: copy-based installer for target repos, including hooks by default.
+- `scripts/run_tag_dependency_agent_dry_run.sh`: local dry run for tag classification plus `ast-grep` dependency expansion.
 - `templates/`: composable setup snippets for `.gitignore`, `.envrc`,
   `.env.example`, and common `Justfile` targets.
 
@@ -148,3 +153,20 @@ After creating a GitHub token/session:
 gh auth login -h github.com
 gh repo create agent_gest_git_skills --public --source . --remote origin --push
 ```
+
+## Tag And Dependency Impact
+
+Before creating Gest tasks, agents should classify work against the existing tag
+vocabulary and record selected/rejected/new tags. For code-facing changes, use
+`ast-grep` to inspect semantic dependers of changed contracts. See
+[`docs/tag_dependency_workflow.md`](docs/tag_dependency_workflow.md).
+
+## Hooks
+
+`install.sh` installs `.claude/` and `.codex/` hooks by default. The GitButler
+hooks enforce GitButler mode-strict during active GitButler branch/stack series:
+use `but` for writes, reserve raw git writes for explicit physical worktree
+execution, and keep tag/dependency checks in view. When a planned flow has
+left GitButler mode and is intentionally creating physical worktrees, prefix raw
+git worktree commands with `GEST_VCS_EXECUTION=git-worktrees`. Existing repos
+can refresh hooks with `scripts/sync_g_skills.sh --hooks /path/to/repo`.

@@ -37,3 +37,7 @@ then make the needed changes.
 For reusable Gest/Codex workflow material, mirror reusable updates to the
 version-controlled workflow template repository, then verify, commit, and push
 that template repository unless blocked.
+
+## Tag And Dependency Docs
+
+When docs describe task creation, code changes, verification, or review, include the tag classification and `ast-grep` dependency-impact workflow from `docs/tag_dependency_workflow.md` where relevant.

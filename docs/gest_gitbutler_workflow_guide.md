@@ -2,7 +2,9 @@
 
 This guide is for a human who wants to reproduce the Gest/Codex workflow by
 hand, understand why the branch policy exists, and practice the supported
-branch modes in a disposable repository.
+branch modes in a disposable repository. For live GitHub PR examples, including
+GitButler branch PRs, multi-commit branches, stacked PRs, and physical worktree
+PRs, see `docs/live_github_gitbutler_workflow_tutorial.md`.
 
 The short version:
 
@@ -205,6 +207,12 @@ python3 tools/gest_mermaid_graph.py \
   --iteration "$iteration_id" \
   --output exports/gest/relationships-focused.html
 ```
+
+## Tag Classification And Dependency Impact
+
+Before creating tasks, classify work against existing Gest tags. For code-facing
+changes, run `ast-grep` dependency impact checks for changed semantic contracts.
+See `docs/tag_dependency_workflow.md`.
 
 ## Branch Model Vs Execution Model
 
@@ -538,8 +546,8 @@ to `main` before the worktree flow.
 Create two separate worktrees from `main`:
 
 ```bash
-git worktree add -b gest-demo-worktree-a "$lab-wt-a" main
-git worktree add -b gest-demo-worktree-b "$lab-wt-b" main
+GEST_VCS_EXECUTION=git-worktrees git worktree add -b gest-demo-worktree-a "$lab-wt-a" main
+GEST_VCS_EXECUTION=git-worktrees git worktree add -b gest-demo-worktree-b "$lab-wt-b" main
 ```
 
 Make an isolated commit in worktree A:

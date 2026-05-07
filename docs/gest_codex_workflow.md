@@ -189,6 +189,18 @@ outline.root=<gest-task-id>
 
 GitHub is visibility. Gest remains the local execution ledger.
 
+## Tag And Dependency Impact
+
+Before creating or splitting tasks, classify the request against the existing
+Gest tag vocabulary. Record `classification.tags.reviewed=true`,
+`classification.tags.new=<comma-separated-new-tags>`, and
+`impact.ast_grep.required=true|false` where relevant. Use
+`docs/tag_dependency_workflow.md`.
+
+For code-facing work, use `ast-grep` to inspect semantic dependers of changed
+contracts. If a tag or dependency search reveals coupled surfaces, expand the
+current task or create/link child tasks before implementation is complete.
+
 ## Tags
 
 Use tags as filters, not as hierarchy.

@@ -55,3 +55,7 @@ shape is known:
 Use `vcs.execution=git-worktrees` and a distinct `vcs.workspace_path` per task
 when parallel agents will write concurrently. Do not model GitButler parallel
 lanes as agent parallelism.
+
+## Tag Classification
+
+When creating or updating durable tasks, run the classification pass in `docs/tag_dependency_workflow.md`: collect existing tags, select matching tags, reject near misses explicitly when useful, and add new dynamic tags only when no existing tag covers the concept. Use metadata such as `classification.tags.reviewed=true`, `classification.tags.new=<comma-separated-new-tags>`, and `impact.ast_grep.required=true|false` for code-facing work.

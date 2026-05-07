@@ -54,3 +54,7 @@ gest artifact create "<title>" --tag spec --tag <area> --body "<body>" --quiet
 
 Link to outline tasks where appropriate. Do not implement directly from the
 artifact; use `gpl`/`gis` to create follow-on tasks.
+
+## Tag And Dependency Discovery
+
+Specs should run the discovery pass from `docs/tag_dependency_workflow.md` so the spec identifies existing semantic tags, new tags if needed, and coupled code or UI concepts that should later be checked with `ast-grep`.

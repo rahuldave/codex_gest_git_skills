@@ -93,3 +93,7 @@ served through the project run-app contract, commonly `just dev [port]`, or
 confirm that an existing server is already running. Use `integration_tests/`
 scripts for repeated browser flows; if no durable script exists yet, record that
 follow-up.
+
+## Tag And Dependency Pass
+
+Before editing code contracts, re-run the tag/dependency workflow from `docs/tag_dependency_workflow.md`: confirm selected tags still fit, add missing semantic tags, and run `ast-grep` searches for callers, imports, components, selectors, routes, schemas, or other dependers. If a selected tag or depender search reveals coupled surfaces, expand the task or create/link a child task before implementation is complete. Completion notes for code-facing work should include `Tag classification:` and `Dependency impact:` lines.
