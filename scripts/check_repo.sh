@@ -19,6 +19,8 @@ required_files=(
   "docs/just_command_contract.md"
   "scripts/install.sh"
   "scripts/sync_g_skills.sh"
+  "scripts/run_gitbutler_workflow_lab.sh"
+  "scripts/run_gitbutler_github_integration_lab.sh"
   "scripts/run_tag_dependency_agent_dry_run.sh"
   "templates/README.md"
   "tools/gest_mermaid_graph.py"
@@ -65,6 +67,8 @@ required_text=(
   "git worktree add"
   "GitButler mode-strict"
   "GEST_VCS_EXECUTION=git-worktrees"
+  "run_gitbutler_workflow_lab.sh"
+  "run_gitbutler_github_integration_lab.sh"
 )
 
 for needle in "${required_text[@]}"; do

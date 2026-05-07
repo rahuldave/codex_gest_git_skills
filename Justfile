@@ -7,10 +7,17 @@ lint:
 static: lint
 
 test:
+  scripts/run_gitbutler_workflow_lab.sh
   scripts/run_tag_dependency_agent_dry_run.sh
 
 tag-dependency-dry-run:
   scripts/run_tag_dependency_agent_dry_run.sh
+
+workflow-lab:
+  scripts/run_gitbutler_workflow_lab.sh
+
+integration-live:
+  scripts/run_gitbutler_github_integration_lab.sh
 
 diff-check:
   scripts/check_repo.sh --diff

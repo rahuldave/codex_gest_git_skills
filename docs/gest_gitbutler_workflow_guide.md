@@ -333,6 +333,30 @@ finish each worktree, rebase if needed, integrate intentionally, then clean up
 
 ## Reproduce The Workflow Lab
 
+For an automated local smoke test of the four VCS shapes, run:
+
+```bash
+just workflow-lab
+```
+
+That invokes `scripts/run_gitbutler_workflow_lab.sh`, which creates a disposable
+repo and local bare remote, then verifies:
+
+1. plain GitButler branch push
+2. multi-commit GitButler branch push
+3. stacked GitButler branch push
+4. physical git worktrees for concurrent write slices
+
+For live GitHub PR coverage, run the gated integration lab:
+
+```bash
+just integration-live
+```
+
+That invokes `scripts/run_gitbutler_github_integration_lab.sh`. It requires
+`gh` authentication with `delete_repo` scope because it creates and deletes
+temporary GitHub repositories.
+
 This lab creates a disposable repository, bootstraps a small TypeScript command
 contract, and then exercises the supported branch/worktree modes. It
 intentionally avoids concurrent GitButler parallel lanes. For the full
