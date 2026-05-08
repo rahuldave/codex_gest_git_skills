@@ -2,6 +2,8 @@
 
 This tutorial creates four temporary GitHub repositories with fixed names,
 runs four agent workflows, and tells you exactly what to check after each turn.
+The pull-request steps create PRs first, then a later merge step merges those
+PRs before cleanup deletes the temporary repositories.
 
 You will learn:
 
@@ -13,26 +15,19 @@ You will learn:
 
 Only step 3 uses GitButler as the main tool.
 
-## Latest Live Run
+## Pull Request Command Map
 
-This tutorial was rerun against live temporary GitHub repositories on
-2026-05-07. The historical transcript is
-`docs/live_gitbutler_tutorial_transcript_2026-05-07.md`.
+This tutorial uses these PR creation commands:
 
-Observed results:
+- Step 1: `gh pr create --base main --head tutorial/plain`
+- Step 2: `gh pr create --base main --head tutorial/multi`
+- Step 3: `but pr new tutorial/stack-child --default --json`
+- Step 4: `gh pr create --base main --head tutorial/worktree-a` and
+  `gh pr create --base main --head tutorial/worktree-b`
 
-- Step 1 used ordinary git and opened `tutorial/plain` into `main`.
-- Step 2 used ordinary git and opened a two-commit `tutorial/multi` PR into
-  `main`.
-- Step 3 used GitButler for the local stack. With forge auth configured,
-  `but pr new tutorial/stack-base -m ... --json` created the base PR. The child
-  command `but pr new tutorial/stack-child --default --json` returned GitHub
-  `422 Unprocessable Entity`, so the agent used `gh pr create --base
-  tutorial/stack-base --head tutorial/stack-child` for the child PR.
-- Step 4 used physical git worktrees and opened two independent PRs into
-  `main`.
-- Cleanup deleted all four temporary GitHub repositories with
-  `gh repo delete --yes`.
+For stacked PRs, select the top stack branch with `but pr new`. GitButler walks
+the stack from bottom to top and creates the lower PR first, so one command
+creates both the base and child PRs with the correct targets.
 
 ## What This Tutorial Will Do
 
@@ -84,8 +79,9 @@ Before starting, delete any existing GitHub repos with those names using
 Create a local tutorial root at `/tmp/agent-gest-git-tutorial`.
 Create `/tmp/agent-gest-git-tutorial/logs`.
 
-For each following step, write a command log in that logs directory. After all
-steps finish, delete the four GitHub repos unless I explicitly ask to keep them.
+For each following step, write a command log in that logs directory. After the
+PR-opening steps finish, merge the PRs in Step 6. After the merge step, delete
+the four GitHub repos unless I explicitly ask to keep them.
 ```
 
 After the agent finishes, check:
@@ -122,10 +118,16 @@ Create branch `tutorial/plain` with ordinary git, not GitButler.
 Add `plain.txt` containing `plain branch change`.
 Commit with message `test: add plain branch change`.
 Push the branch.
-Open a PR with:
-- base: `main`
-- head: `tutorial/plain`
-- title: `test: plain git branch flow`
+Open a PR:
+
+```bash
+gh pr create \
+  --repo "$(gh api user -q .login)/agent-gest-git-tutorial-plain" \
+  --base main \
+  --head tutorial/plain \
+  --title 'test: plain git branch flow' \
+  --body 'Tutorial plain git branch flow.'
+```
 
 Write all commands and key outputs to
 `/tmp/agent-gest-git-tutorial/logs/01-plain-git-branch.log`.
@@ -190,10 +192,16 @@ Commit with message `test: add first session edit`.
 Append `session edit two` to `session.txt`.
 Commit with message `test: add second session edit`.
 Push the branch.
-Open a PR with:
-- base: `main`
-- head: `tutorial/multi`
-- title: `test: multi commit git branch flow`
+Open a PR:
+
+```bash
+gh pr create \
+  --repo "$(gh api user -q .login)/agent-gest-git-tutorial-multi" \
+  --base main \
+  --head tutorial/multi \
+  --title 'test: multi commit git branch flow' \
+  --body 'Tutorial multi-commit git branch flow.'
+```
 
 Write all commands and key outputs to
 `/tmp/agent-gest-git-tutorial/logs/02-multi-commit-git-branch.log`.
@@ -250,24 +258,27 @@ Push `main`.
 Run `but setup`.
 Create GitButler branch `tutorial/stack-base`.
 Add `stack.txt` containing `stack base`.
-Commit to `tutorial/stack-base` with message `test: add stack base`.
+Commit to `tutorial/stack-base` with message `test: stack base flow`.
 
 Create GitButler branch `tutorial/stack-child` anchored on
 `tutorial/stack-base`.
 Append `stack child` to `stack.txt`.
-Commit to `tutorial/stack-child` with message `test: add stack child`.
+Commit to `tutorial/stack-child` with message `test: stack child flow`.
 
 Push both branches.
 Open two PRs:
 - `tutorial/stack-base` into `main`, title `test: stack base flow`
 - `tutorial/stack-child` into `tutorial/stack-base`, title `test: stack child flow`
 
-Prefer `but pr new` after `but push` when GitButler forge auth is configured.
-If the child stack PR fails non-interactively, use `gh pr create` with
-`--base tutorial/stack-base --head tutorial/stack-child` and record the exact
-GitButler error in the log. On the 2026-05-07 live run, the base PR was created
-by `but pr new`, while the child PR required this `gh pr create` fallback after
-GitButler returned GitHub `422 Unprocessable Entity`.
+Create the stacked PRs with one `but pr new` command on the top branch:
+
+```bash
+but pr new tutorial/stack-child --default --json
+```
+
+Do not create the base PR in a separate earlier command. `but pr new` walks the
+stack from bottom to top for the selected branch, so the top-branch command
+creates both PRs in the right order.
 
 Write all commands and key outputs to
 `/tmp/agent-gest-git-tutorial/logs/03-gitbutler-stack.log`.
@@ -302,6 +313,7 @@ Commands it should have used:
 - `but branch new --anchor tutorial/stack-base tutorial/stack-child`
 - `but commit`
 - `but push`
+- `but pr new tutorial/stack-child --default --json`
 
 This step should not use physical git worktrees.
 
@@ -337,11 +349,29 @@ Prefix the raw worktree creation commands with
 
 In worktree A, add `worktree-a.txt` containing `worktree a isolated change`,
 commit with message `test: add worktree a change`, push the branch, and open a
-PR into `main` titled `test: worktree a flow`.
+PR:
+
+```bash
+gh pr create \
+  --repo "$(gh api user -q .login)/agent-gest-git-tutorial-worktrees" \
+  --base main \
+  --head tutorial/worktree-a \
+  --title 'test: worktree a flow' \
+  --body 'Tutorial physical worktree A flow.'
+```
 
 In worktree B, add `worktree-b.txt` containing `worktree b isolated change`,
 commit with message `test: add worktree b change`, push the branch, and open a
-PR into `main` titled `test: worktree b flow`.
+PR:
+
+```bash
+gh pr create \
+  --repo "$(gh api user -q .login)/agent-gest-git-tutorial-worktrees" \
+  --base main \
+  --head tutorial/worktree-b \
+  --title 'test: worktree b flow' \
+  --body 'Tutorial physical worktree B flow.'
+```
 
 Remove both physical worktrees after the PRs are open.
 
@@ -391,6 +421,18 @@ run ast-grep against the semantic contract that is changing. If another surface
 depends on that contract, the agent should expand the task or create a tagged
 child task before implementation.
 
+In a real Gest project, "existing tags" come from Gest memory:
+
+```bash
+gest task list --all --json
+gest artifact list --all --json
+gest iteration list --all --json
+```
+
+The agent should build a unique vocabulary from those commands before choosing
+tags. This tutorial uses a small seeded vocabulary file so the dry run is
+deterministic even in `/tmp`.
+
 Local fixture:
 
 ```text
@@ -403,6 +445,12 @@ Ask the agent:
 Run tutorial step 5: tag classification and ast-grep dependency check.
 
 Create `/tmp/agent-gest-git-tutorial/tag-ast-grep/src`.
+Create `/tmp/agent-gest-git-tutorial/tag-ast-grep/existing-tags.txt` containing:
+- `count-or-probability-coloring`
+- `histogram-colors`
+- `probability-pill-colors`
+- `reader-ui`
+- `docs`
 
 Create `src/colors.js` containing a function named
 `countOrProbabilityColorScale`.
@@ -410,11 +458,12 @@ Create `src/histogram.js` that calls `countOrProbabilityColorScale`.
 Create `src/pill.js` that calls `countOrProbabilityColorScale`.
 
 Before editing anything, classify the requested change "change histogram colors
-for low-count bins" with these tags:
+for low-count bins" against `existing-tags.txt`:
 - selected existing tag: `count-or-probability-coloring`
 - selected existing tag: `histogram-colors`
 - selected existing tag: `probability-pill-colors`
 - rejected near miss: `reader-ui`
+- new dynamic tags: none
 
 Then run:
 
@@ -425,7 +474,7 @@ The dependency impact should find both:
 - `src/pill.js`
 
 Do not change the fixture in this step. Write the selected tags, rejected tag,
-ast-grep command, and dependency-impact conclusion to
+new-tag decision, ast-grep command, and dependency-impact conclusion to
 `/tmp/agent-gest-git-tutorial/logs/05-tag-ast-grep.log`.
 ```
 
@@ -449,7 +498,102 @@ The agent should report that a histogram-color implementation must also account
 for the probability-pill color surface, or create a child task tagged with the
 same semantic dependency before completion.
 
-## Step 6: Cleanup
+Commands it should have used:
+
+- `gest task list --all --json`, `gest artifact list --all --json`, and
+  `gest iteration list --all --json` in a real Gest project, or the seeded
+  `existing-tags.txt` vocabulary in this deterministic tutorial fixture
+- `ast-grep run --lang javascript --pattern 'countOrProbabilityColorScale($$$)'`
+
+Commands it should not have used:
+
+- invented "existing" tags without first collecting or seeding a tag vocabulary
+- raw string-only dependency search as the primary check when `ast-grep` is
+  available for the language
+
+## Step 6: Merge The Tutorial PRs
+
+What this step teaches:
+
+Opening PRs is not the end of a durable checkpoint. Merge the PRs before cleanup
+so branch deletion, PR state, and stacked-PR ordering are exercised.
+
+Ask the agent:
+
+```text
+Run tutorial step 6: merge tutorial PRs.
+
+Use my GitHub account from `gh api user -q .login`.
+
+Before merging, record each PR number with `gh pr view <branch> --json number`.
+Then merge these PRs with `gh pr merge <number> --merge --delete-branch`, and
+verify each PR state is `MERGED` by PR number:
+
+- repo `agent-gest-git-tutorial-plain`, PR branch `tutorial/plain`
+- repo `agent-gest-git-tutorial-multi`, PR branch `tutorial/multi`
+- repo `agent-gest-git-tutorial-worktrees`, PR branch `tutorial/worktree-a`
+- repo `agent-gest-git-tutorial-worktrees`, PR branch `tutorial/worktree-b`
+
+For repo `agent-gest-git-tutorial-stack`, merge in this order:
+
+1. merge PR branch `tutorial/stack-child` into `tutorial/stack-base`
+2. merge PR branch `tutorial/stack-base` into `main`
+
+Write all commands and key outputs to
+`/tmp/agent-gest-git-tutorial/logs/06-merge-prs.log`.
+```
+
+After the agent finishes, check:
+
+```bash
+owner="$(gh api user -q .login)"
+
+gh pr list \
+  --repo "$owner/agent-gest-git-tutorial-plain" \
+  --state merged \
+  --search "head:tutorial/plain" \
+  --json state,baseRefName,headRefName,title
+
+gh pr list \
+  --repo "$owner/agent-gest-git-tutorial-multi" \
+  --state merged \
+  --search "head:tutorial/multi" \
+  --json state,baseRefName,headRefName,title
+
+gh pr list \
+  --repo "$owner/agent-gest-git-tutorial-stack" \
+  --state merged \
+  --json title,baseRefName,headRefName
+
+gh pr list \
+  --repo "$owner/agent-gest-git-tutorial-worktrees" \
+  --state merged \
+  --json title,baseRefName,headRefName
+```
+
+Expected:
+
+```text
+plain PR: state MERGED, baseRefName main, headRefName tutorial/plain
+multi PR: state MERGED, baseRefName main, headRefName tutorial/multi
+stack child PR: state MERGED, baseRefName tutorial/stack-base
+stack base PR: state MERGED, baseRefName main
+worktree A PR: state MERGED, baseRefName main
+worktree B PR: state MERGED, baseRefName main
+```
+
+Commands it should have used:
+
+- `gh pr view <branch> --json number` before deleting PR branches
+- `gh pr merge <number> --merge --delete-branch`
+- `gh pr view` or `gh pr list --state merged`
+
+Commands it should not have used:
+
+- deleting the temporary repositories before PR state is verified as `MERGED`
+- deleting stacked branches before the child and base stack PRs are merged
+
+## Step 7: Cleanup
 
 Ask the agent:
 

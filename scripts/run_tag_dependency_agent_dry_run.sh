@@ -41,7 +41,7 @@ export function probabilityPill(probability) {
 }
 JS
 
-cat >"$work_root/tags.txt" <<'TAGS'
+cat >"$work_root/existing-tags.txt" <<'TAGS'
 histogram-colors
 probability-pill-colors
 count-or-probability-coloring
@@ -68,10 +68,12 @@ fi
 
 cat <<'TEXT'
 Agent dry run: tag classification
+- vocabulary source: seeded existing-tags fixture, standing in for Gest task/artifact/iteration tag collection
 - selected existing tag: count-or-probability-coloring
 - selected existing tag: histogram-colors
 - selected existing tag: probability-pill-colors
 - rejected near miss: reader-ui, because the prompt targeted shared color semantics rather than a full reader interaction change
+- new dynamic tags: none
 
 Agent dry run: ast-grep dependency impact
 - changed contract: countOrProbabilityColorScale

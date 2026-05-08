@@ -278,16 +278,15 @@ flow_gitbutler_stack() {
 
   log_cmd but branch new demo/stack-base
   write_file stack.txt "stack base"
-  log_cmd but commit demo/stack-base -m "test: add stack base"
+  log_cmd but commit demo/stack-base -m "test: GitButler stack base flow"
   log_cmd but branch new --anchor demo/stack-base demo/stack-child
   printf 'stack child\n' >> stack.txt
   printf '\n$ printf ... >> stack.txt\n'
-  log_cmd but commit demo/stack-child -m "test: add stack child"
+  log_cmd but commit demo/stack-child -m "test: GitButler stack child flow"
   log_cmd but status
   log_cmd but push demo/stack-base
   log_cmd but push demo/stack-child
-  log_cmd create_pr "$full_repo" demo/stack-base main "test: GitButler stack base flow" "Live GitButler stack base flow."
-  log_cmd create_pr "$full_repo" demo/stack-child demo/stack-base "test: GitButler stack child flow" "Live GitButler stack child flow."
+  log_cmd but pr new demo/stack-child --default --json
   verify_pr_base "$full_repo" demo/stack-base main
   verify_pr_base "$full_repo" demo/stack-child demo/stack-base
   log_cmd gh pr list --repo "$full_repo" --state open --json number,url,title,headRefName,baseRefName
