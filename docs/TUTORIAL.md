@@ -28,11 +28,13 @@ Observed results:
 - Step 1 used ordinary git and opened `tutorial/plain` into `main`.
 - Step 2 used ordinary git and opened a two-commit `tutorial/multi` PR into
   `main`.
-- Step 3 used GitButler for the local stack. With forge auth configured,
-  `but pr new tutorial/stack-base -m ... --json` created the base PR. The child
-  command `but pr new tutorial/stack-child --default --json` returned GitHub
-  `422 Unprocessable Entity`, so the agent used `gh pr create --base
-  tutorial/stack-base --head tutorial/stack-child` for the child PR.
+- Step 3 used GitButler for the local stack. The 2026-05-07 live run created
+  the base PR first, then tried the child PR separately and hit GitHub
+  `422 Unprocessable Entity`. Current GitButler CLI behavior expects selecting
+  the top stack branch: `but pr new tutorial/stack-child --default --json`
+  creates the base PR and child PR together, bottom-up.
+- A follow-up live GitHub lab on 2026-05-08 verified the repaired one-command
+  top-of-stack flow.
 - Step 4 used physical git worktrees and opened two independent PRs into
   `main`.
 - Step 5 was covered by the local `just tag-dependency-dry-run` harness rather
@@ -260,24 +262,30 @@ Push `main`.
 Run `but setup`.
 Create GitButler branch `tutorial/stack-base`.
 Add `stack.txt` containing `stack base`.
-Commit to `tutorial/stack-base` with message `test: add stack base`.
+Commit to `tutorial/stack-base` with message `test: stack base flow`.
 
 Create GitButler branch `tutorial/stack-child` anchored on
 `tutorial/stack-base`.
 Append `stack child` to `stack.txt`.
-Commit to `tutorial/stack-child` with message `test: add stack child`.
+Commit to `tutorial/stack-child` with message `test: stack child flow`.
 
 Push both branches.
 Open two PRs:
 - `tutorial/stack-base` into `main`, title `test: stack base flow`
 - `tutorial/stack-child` into `tutorial/stack-base`, title `test: stack child flow`
 
-Prefer `but pr new` after `but push` when GitButler forge auth is configured.
-If the child stack PR fails non-interactively, use `gh pr create` with
-`--base tutorial/stack-base --head tutorial/stack-child` and record the exact
-GitButler error in the log. On the 2026-05-07 live run, the base PR was created
-by `but pr new`, while the child PR required this `gh pr create` fallback after
-GitButler returned GitHub `422 Unprocessable Entity`.
+Create the stacked PRs with one `but pr new` command on the top branch:
+
+```bash
+but pr new tutorial/stack-child --default --json
+```
+
+Do not create the base PR in a separate earlier command. `but pr new` walks the
+stack from bottom to top for the selected branch. If the tutorial creates the
+base PR first and then asks GitButler to create the child PR, current GitButler
+CLI behavior can try to process the already-created base PR again from cached
+review state and GitHub may reject the duplicate PR request with
+`422 Unprocessable Entity`.
 
 Write all commands and key outputs to
 `/tmp/agent-gest-git-tutorial/logs/03-gitbutler-stack.log`.
@@ -312,6 +320,7 @@ Commands it should have used:
 - `but branch new --anchor tutorial/stack-base tutorial/stack-child`
 - `but commit`
 - `but push`
+- `but pr new tutorial/stack-child --default --json`
 
 This step should not use physical git worktrees.
 

@@ -65,6 +65,8 @@ required_text=(
   "Latest Live Run"
   "live_gitbutler_tutorial_transcript_2026-05-07.md"
   "422 Unprocessable Entity"
+  "but pr new tutorial/stack-child --default --json"
+  "Do not create the base PR in a separate earlier command"
   "gh repo delete --yes"
   "Merge The Tutorial PRs"
   "gh pr merge <number> --merge --delete-branch"
