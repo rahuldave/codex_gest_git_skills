@@ -2,6 +2,8 @@
 
 This tutorial creates four temporary GitHub repositories with fixed names,
 runs four agent workflows, and tells you exactly what to check after each turn.
+The pull-request steps create PRs first, then a later merge step merges those
+PRs before cleanup deletes the temporary repositories.
 
 You will learn:
 
@@ -16,7 +18,9 @@ Only step 3 uses GitButler as the main tool.
 ## Latest Live Run
 
 This tutorial was rerun against live temporary GitHub repositories on
-2026-05-07. The historical transcript is
+2026-05-07. That run opened the expected PRs and deleted the temporary
+repositories; it did not yet include the merge step now documented below. The
+historical transcript is
 `docs/live_gitbutler_tutorial_transcript_2026-05-07.md`.
 
 Observed results:
@@ -31,6 +35,11 @@ Observed results:
   tutorial/stack-base --head tutorial/stack-child` for the child PR.
 - Step 4 used physical git worktrees and opened two independent PRs into
   `main`.
+- Step 5 was covered by the local `just tag-dependency-dry-run` harness rather
+  than the live GitHub transcript.
+- Step 6 now merges every PR before cleanup. For the stacked PR repository,
+  merge the child PR into `tutorial/stack-base` first, then merge the base PR
+  into `main`.
 - Cleanup deleted all four temporary GitHub repositories with
   `gh repo delete --yes`.
 
@@ -84,8 +93,9 @@ Before starting, delete any existing GitHub repos with those names using
 Create a local tutorial root at `/tmp/agent-gest-git-tutorial`.
 Create `/tmp/agent-gest-git-tutorial/logs`.
 
-For each following step, write a command log in that logs directory. After all
-steps finish, delete the four GitHub repos unless I explicitly ask to keep them.
+For each following step, write a command log in that logs directory. After the
+PR-opening steps finish, merge the PRs in Step 6. After the merge step, delete
+the four GitHub repos unless I explicitly ask to keep them.
 ```
 
 After the agent finishes, check:
@@ -391,6 +401,18 @@ run ast-grep against the semantic contract that is changing. If another surface
 depends on that contract, the agent should expand the task or create a tagged
 child task before implementation.
 
+In a real Gest project, "existing tags" come from Gest memory:
+
+```bash
+gest task list --all --json
+gest artifact list --all --json
+gest iteration list --all --json
+```
+
+The agent should build a unique vocabulary from those commands before choosing
+tags. This tutorial uses a small seeded vocabulary file so the dry run is
+deterministic even in `/tmp`.
+
 Local fixture:
 
 ```text
@@ -403,6 +425,12 @@ Ask the agent:
 Run tutorial step 5: tag classification and ast-grep dependency check.
 
 Create `/tmp/agent-gest-git-tutorial/tag-ast-grep/src`.
+Create `/tmp/agent-gest-git-tutorial/tag-ast-grep/existing-tags.txt` containing:
+- `count-or-probability-coloring`
+- `histogram-colors`
+- `probability-pill-colors`
+- `reader-ui`
+- `docs`
 
 Create `src/colors.js` containing a function named
 `countOrProbabilityColorScale`.
@@ -410,11 +438,12 @@ Create `src/histogram.js` that calls `countOrProbabilityColorScale`.
 Create `src/pill.js` that calls `countOrProbabilityColorScale`.
 
 Before editing anything, classify the requested change "change histogram colors
-for low-count bins" with these tags:
+for low-count bins" against `existing-tags.txt`:
 - selected existing tag: `count-or-probability-coloring`
 - selected existing tag: `histogram-colors`
 - selected existing tag: `probability-pill-colors`
 - rejected near miss: `reader-ui`
+- new dynamic tags: none
 
 Then run:
 
@@ -425,7 +454,7 @@ The dependency impact should find both:
 - `src/pill.js`
 
 Do not change the fixture in this step. Write the selected tags, rejected tag,
-ast-grep command, and dependency-impact conclusion to
+new-tag decision, ast-grep command, and dependency-impact conclusion to
 `/tmp/agent-gest-git-tutorial/logs/05-tag-ast-grep.log`.
 ```
 
@@ -449,7 +478,102 @@ The agent should report that a histogram-color implementation must also account
 for the probability-pill color surface, or create a child task tagged with the
 same semantic dependency before completion.
 
-## Step 6: Cleanup
+Commands it should have used:
+
+- `gest task list --all --json`, `gest artifact list --all --json`, and
+  `gest iteration list --all --json` in a real Gest project, or the seeded
+  `existing-tags.txt` vocabulary in this deterministic tutorial fixture
+- `ast-grep run --lang javascript --pattern 'countOrProbabilityColorScale($$$)'`
+
+Commands it should not have used:
+
+- invented "existing" tags without first collecting or seeding a tag vocabulary
+- raw string-only dependency search as the primary check when `ast-grep` is
+  available for the language
+
+## Step 6: Merge The Tutorial PRs
+
+What this step teaches:
+
+Opening PRs is not the end of a durable checkpoint. Merge the PRs before cleanup
+so branch deletion, PR state, and stacked-PR ordering are exercised.
+
+Ask the agent:
+
+```text
+Run tutorial step 6: merge tutorial PRs.
+
+Use my GitHub account from `gh api user -q .login`.
+
+Before merging, record each PR number with `gh pr view <branch> --json number`.
+Then merge these PRs with `gh pr merge <number> --merge --delete-branch`, and
+verify each PR state is `MERGED` by PR number:
+
+- repo `agent-gest-git-tutorial-plain`, PR branch `tutorial/plain`
+- repo `agent-gest-git-tutorial-multi`, PR branch `tutorial/multi`
+- repo `agent-gest-git-tutorial-worktrees`, PR branch `tutorial/worktree-a`
+- repo `agent-gest-git-tutorial-worktrees`, PR branch `tutorial/worktree-b`
+
+For repo `agent-gest-git-tutorial-stack`, merge in this order:
+
+1. merge PR branch `tutorial/stack-child` into `tutorial/stack-base`
+2. merge PR branch `tutorial/stack-base` into `main`
+
+Write all commands and key outputs to
+`/tmp/agent-gest-git-tutorial/logs/06-merge-prs.log`.
+```
+
+After the agent finishes, check:
+
+```bash
+owner="$(gh api user -q .login)"
+
+gh pr list \
+  --repo "$owner/agent-gest-git-tutorial-plain" \
+  --state merged \
+  --search "head:tutorial/plain" \
+  --json state,baseRefName,headRefName,title
+
+gh pr list \
+  --repo "$owner/agent-gest-git-tutorial-multi" \
+  --state merged \
+  --search "head:tutorial/multi" \
+  --json state,baseRefName,headRefName,title
+
+gh pr list \
+  --repo "$owner/agent-gest-git-tutorial-stack" \
+  --state merged \
+  --json title,baseRefName,headRefName
+
+gh pr list \
+  --repo "$owner/agent-gest-git-tutorial-worktrees" \
+  --state merged \
+  --json title,baseRefName,headRefName
+```
+
+Expected:
+
+```text
+plain PR: state MERGED, baseRefName main, headRefName tutorial/plain
+multi PR: state MERGED, baseRefName main, headRefName tutorial/multi
+stack child PR: state MERGED, baseRefName tutorial/stack-base
+stack base PR: state MERGED, baseRefName main
+worktree A PR: state MERGED, baseRefName main
+worktree B PR: state MERGED, baseRefName main
+```
+
+Commands it should have used:
+
+- `gh pr view <branch> --json number` before deleting PR branches
+- `gh pr merge <number> --merge --delete-branch`
+- `gh pr view` or `gh pr list --state merged`
+
+Commands it should not have used:
+
+- deleting the temporary repositories before PR state is verified as `MERGED`
+- deleting stacked branches before the child and base stack PRs are merged
+
+## Step 7: Cleanup
 
 Ask the agent:
 

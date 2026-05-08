@@ -66,6 +66,12 @@ required_text=(
   "live_gitbutler_tutorial_transcript_2026-05-07.md"
   "422 Unprocessable Entity"
   "gh repo delete --yes"
+  "Merge The Tutorial PRs"
+  "gh pr merge <number> --merge --delete-branch"
+  "state MERGED"
+  "existing-tags.txt"
+  "new dynamic tags: none"
+  "vocabulary source"
   "After the agent finishes, check:"
   "classification.tags.reviewed"
   "impact.ast_grep.required"
@@ -81,7 +87,7 @@ required_text=(
 )
 
 for needle in "${required_text[@]}"; do
-  if ! grep -R "$needle" "$repo_root/AGENTS.template.md" "$repo_root/README.md" "$repo_root/docs" "$repo_root/.agents/skills" >/dev/null; then
+  if ! grep -R "$needle" "$repo_root/AGENTS.template.md" "$repo_root/README.md" "$repo_root/docs" "$repo_root/.agents/skills" "$repo_root/scripts" >/dev/null; then
     echo "missing required GitButler workflow text: $needle" >&2
     exit 1
   fi
