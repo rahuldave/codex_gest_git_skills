@@ -15,35 +15,19 @@ You will learn:
 
 Only step 3 uses GitButler as the main tool.
 
-## Latest Live Run
+## Pull Request Command Map
 
-This tutorial was rerun against live temporary GitHub repositories on
-2026-05-07. That run opened the expected PRs and deleted the temporary
-repositories; it did not yet include the merge step now documented below. The
-historical transcript is
-`docs/live_gitbutler_tutorial_transcript_2026-05-07.md`.
+This tutorial uses these PR creation commands:
 
-Observed results:
+- Step 1: `gh pr create --base main --head tutorial/plain`
+- Step 2: `gh pr create --base main --head tutorial/multi`
+- Step 3: `but pr new tutorial/stack-child --default --json`
+- Step 4: `gh pr create --base main --head tutorial/worktree-a` and
+  `gh pr create --base main --head tutorial/worktree-b`
 
-- Step 1 used ordinary git and opened `tutorial/plain` into `main`.
-- Step 2 used ordinary git and opened a two-commit `tutorial/multi` PR into
-  `main`.
-- Step 3 used GitButler for the local stack. The 2026-05-07 live run created
-  the base PR first, then tried the child PR separately and hit GitHub
-  `422 Unprocessable Entity`. Current GitButler CLI behavior expects selecting
-  the top stack branch: `but pr new tutorial/stack-child --default --json`
-  creates the base PR and child PR together, bottom-up.
-- A follow-up live GitHub lab on 2026-05-08 verified the repaired one-command
-  top-of-stack flow.
-- Step 4 used physical git worktrees and opened two independent PRs into
-  `main`.
-- Step 5 was covered by the local `just tag-dependency-dry-run` harness rather
-  than the live GitHub transcript.
-- Step 6 now merges every PR before cleanup. For the stacked PR repository,
-  merge the child PR into `tutorial/stack-base` first, then merge the base PR
-  into `main`.
-- Cleanup deleted all four temporary GitHub repositories with
-  `gh repo delete --yes`.
+For stacked PRs, select the top stack branch with `but pr new`. GitButler walks
+the stack from bottom to top and creates the lower PR first, so one command
+creates both the base and child PRs with the correct targets.
 
 ## What This Tutorial Will Do
 
@@ -134,10 +118,16 @@ Create branch `tutorial/plain` with ordinary git, not GitButler.
 Add `plain.txt` containing `plain branch change`.
 Commit with message `test: add plain branch change`.
 Push the branch.
-Open a PR with:
-- base: `main`
-- head: `tutorial/plain`
-- title: `test: plain git branch flow`
+Open a PR:
+
+```bash
+gh pr create \
+  --repo "$(gh api user -q .login)/agent-gest-git-tutorial-plain" \
+  --base main \
+  --head tutorial/plain \
+  --title 'test: plain git branch flow' \
+  --body 'Tutorial plain git branch flow.'
+```
 
 Write all commands and key outputs to
 `/tmp/agent-gest-git-tutorial/logs/01-plain-git-branch.log`.
@@ -202,10 +192,16 @@ Commit with message `test: add first session edit`.
 Append `session edit two` to `session.txt`.
 Commit with message `test: add second session edit`.
 Push the branch.
-Open a PR with:
-- base: `main`
-- head: `tutorial/multi`
-- title: `test: multi commit git branch flow`
+Open a PR:
+
+```bash
+gh pr create \
+  --repo "$(gh api user -q .login)/agent-gest-git-tutorial-multi" \
+  --base main \
+  --head tutorial/multi \
+  --title 'test: multi commit git branch flow' \
+  --body 'Tutorial multi-commit git branch flow.'
+```
 
 Write all commands and key outputs to
 `/tmp/agent-gest-git-tutorial/logs/02-multi-commit-git-branch.log`.
@@ -281,11 +277,8 @@ but pr new tutorial/stack-child --default --json
 ```
 
 Do not create the base PR in a separate earlier command. `but pr new` walks the
-stack from bottom to top for the selected branch. If the tutorial creates the
-base PR first and then asks GitButler to create the child PR, current GitButler
-CLI behavior can try to process the already-created base PR again from cached
-review state and GitHub may reject the duplicate PR request with
-`422 Unprocessable Entity`.
+stack from bottom to top for the selected branch, so the top-branch command
+creates both PRs in the right order.
 
 Write all commands and key outputs to
 `/tmp/agent-gest-git-tutorial/logs/03-gitbutler-stack.log`.
@@ -356,11 +349,29 @@ Prefix the raw worktree creation commands with
 
 In worktree A, add `worktree-a.txt` containing `worktree a isolated change`,
 commit with message `test: add worktree a change`, push the branch, and open a
-PR into `main` titled `test: worktree a flow`.
+PR:
+
+```bash
+gh pr create \
+  --repo "$(gh api user -q .login)/agent-gest-git-tutorial-worktrees" \
+  --base main \
+  --head tutorial/worktree-a \
+  --title 'test: worktree a flow' \
+  --body 'Tutorial physical worktree A flow.'
+```
 
 In worktree B, add `worktree-b.txt` containing `worktree b isolated change`,
 commit with message `test: add worktree b change`, push the branch, and open a
-PR into `main` titled `test: worktree b flow`.
+PR:
+
+```bash
+gh pr create \
+  --repo "$(gh api user -q .login)/agent-gest-git-tutorial-worktrees" \
+  --base main \
+  --head tutorial/worktree-b \
+  --title 'test: worktree b flow' \
+  --body 'Tutorial physical worktree B flow.'
+```
 
 Remove both physical worktrees after the PRs are open.
 

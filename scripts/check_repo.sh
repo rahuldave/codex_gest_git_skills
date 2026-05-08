@@ -62,11 +62,8 @@ required_text=(
   "GitButler stacked PRs"
   "physical git worktrees"
   "Tags And ast-grep Dependency Check"
-  "Latest Live Run"
-  "live_gitbutler_tutorial_transcript_2026-05-07.md"
-  "422 Unprocessable Entity"
+  "Pull Request Command Map"
   "but pr new tutorial/stack-child --default --json"
-  "Do not create the base PR in a separate earlier command"
   "gh repo delete --yes"
   "Merge The Tutorial PRs"
   "gh pr merge <number> --merge --delete-branch"
@@ -91,6 +88,13 @@ required_text=(
 for needle in "${required_text[@]}"; do
   if ! grep -R "$needle" "$repo_root/AGENTS.template.md" "$repo_root/README.md" "$repo_root/docs" "$repo_root/.agents/skills" "$repo_root/scripts" >/dev/null; then
     echo "missing required GitButler workflow text: $needle" >&2
+    exit 1
+  fi
+done
+
+for stale_tutorial_text in "Latest Live Run" "422 Unprocessable Entity" "live_gitbutler_tutorial_transcript"; do
+  if grep -q "$stale_tutorial_text" "$repo_root/docs/TUTORIAL.md"; then
+    echo "stale run/debugging text remains in docs/TUTORIAL.md: $stale_tutorial_text" >&2
     exit 1
   fi
 done
