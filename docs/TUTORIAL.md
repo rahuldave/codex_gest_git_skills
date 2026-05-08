@@ -515,17 +515,30 @@ Commands it should not have used:
 
 What this step teaches:
 
-Opening PRs is not the end of a durable checkpoint. Merge the PRs before cleanup
-so branch deletion, PR state, and stacked-PR ordering are exercised.
+Opening PRs is not the end of a durable checkpoint. Review and accept each PR
+before merging, then merge the PRs before cleanup so branch deletion, PR state,
+and stacked-PR ordering are exercised.
 
 Ask the agent:
 
 ```text
-Run tutorial step 6: merge tutorial PRs.
+Run tutorial step 6: accept and merge tutorial PRs.
 
 Use my GitHub account from `gh api user -q .login`.
 
 Before merging, record each PR number with `gh pr view <branch> --json number`.
+For each PR, run the PR acceptance checkpoint first:
+
+- inspect `gh pr view <number> --json number,url,state,isDraft,title,body,headRefName,baseRefName,mergeable,reviewDecision,commits,files,statusCheckRollup,latestReviews`
+- inspect `gh pr diff <number> --patch`
+- inspect `gh pr checks <number>`, treating "no checks reported" as an
+  explicit state to report, not as a silent pass
+- report findings first
+- report PR state, checks, branch/base, mergeability, and the exact merge
+  recommendation
+- stop and ask before merging if there are findings, mergeability is not clean,
+  or the PR target/branch shape is not the expected tutorial shape
+
 Then merge these PRs with `gh pr merge <number> --merge --delete-branch`, and
 verify each PR state is `MERGED` by PR number:
 
@@ -585,6 +598,8 @@ worktree B PR: state MERGED, baseRefName main
 Commands it should have used:
 
 - `gh pr view <branch> --json number` before deleting PR branches
+- `gh pr view <number> --json ...`, `gh pr diff <number> --patch`, and
+  `gh pr checks <number>` as the PR acceptance checkpoint before merging
 - `gh pr merge <number> --merge --delete-branch`
 - `gh pr view` or `gh pr list --state merged`
 
