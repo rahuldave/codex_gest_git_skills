@@ -421,7 +421,48 @@ run ast-grep against the semantic contract that is changing. If another surface
 depends on that contract, the agent should expand the task or create a tagged
 child task before implementation.
 
-In a real Gest project, "existing tags" come from Gest memory:
+This is a live local TypeScript repo lab. It demonstrates two different
+dependency signals:
+
+- tag dependency: Gest tasks already tagged with the same semantic concern
+- ast-grep dependency: TypeScript call sites that use the changing function
+
+Local fixture:
+
+```text
+/tmp/agent-gest-git-tutorial/tag-ast-grep-live
+```
+
+If you are running from this reusable skills repository, this command performs
+the whole step:
+
+```bash
+scripts/run_tag_dependency_typescript_lab.sh \
+  /tmp/agent-gest-git-tutorial/tag-ast-grep-live \
+  /tmp/agent-gest-git-tutorial/logs/05-tag-ast-grep.log
+```
+
+Ask the agent:
+
+```text
+Run tutorial step 5: live TypeScript tag and ast-grep dependency lab.
+
+Create or replace `/tmp/agent-gest-git-tutorial/tag-ast-grep-live`.
+Initialize it as a git repo and a local Gest project.
+Create `/tmp/agent-gest-git-tutorial/logs/05-tag-ast-grep.log`.
+
+In Gest, create these existing tasks and tags:
+
+- `Shared count/probability color contract`
+  - tags: `count-or-probability-coloring`, `design`
+- `Render histogram bin colors`
+  - tags: `count-or-probability-coloring`, `histogram-colors`
+- `Render probability pill colors`
+  - tags: `count-or-probability-coloring`, `probability-pill-colors`
+- `Polish reader hover affordance`
+  - tags: `reader-ui`
+
+Collect the existing tag vocabulary from Gest before choosing tags:
 
 ```bash
 gest task list --all --json
@@ -429,36 +470,18 @@ gest artifact list --all --json
 gest iteration list --all --json
 ```
 
-The agent should build a unique vocabulary from those commands before choosing
-tags. This tutorial uses a small seeded vocabulary file so the dry run is
-deterministic even in `/tmp`.
+Create a small TypeScript project with:
 
-Local fixture:
+- `src/colors.ts`, exporting `countOrProbabilityColorScale`
+- `src/histogram.ts`, calling `countOrProbabilityColorScale`
+- `src/pill.ts`, calling `countOrProbabilityColorScale`
+- `src/readerHover.ts`, not calling `countOrProbabilityColorScale`
 
-```text
-/tmp/agent-gest-git-tutorial/tag-ast-grep
-```
-
-Ask the agent:
-
-```text
-Run tutorial step 5: tag classification and ast-grep dependency check.
-
-Create `/tmp/agent-gest-git-tutorial/tag-ast-grep/src`.
-Create `/tmp/agent-gest-git-tutorial/tag-ast-grep/existing-tags.txt` containing:
-- `count-or-probability-coloring`
-- `histogram-colors`
-- `probability-pill-colors`
-- `reader-ui`
-- `docs`
-
-Create `src/colors.js` containing a function named
-`countOrProbabilityColorScale`.
-Create `src/histogram.js` that calls `countOrProbabilityColorScale`.
-Create `src/pill.js` that calls `countOrProbabilityColorScale`.
+Run `npm install` and `npm exec -- tsc --noEmit`.
 
 Before editing anything, classify the requested change "change histogram colors
-for low-count bins" against `existing-tags.txt`:
+for low-count bins" against the Gest vocabulary:
+
 - selected existing tag: `count-or-probability-coloring`
 - selected existing tag: `histogram-colors`
 - selected existing tag: `probability-pill-colors`
@@ -467,30 +490,40 @@ for low-count bins" against `existing-tags.txt`:
 
 Then run:
 
-`ast-grep run --lang javascript --pattern 'countOrProbabilityColorScale($$$)' --json=compact src`
+```bash
+ast-grep run \
+  --lang typescript \
+  --pattern 'countOrProbabilityColorScale($$$)' \
+  --json=compact \
+  src
+```
 
-The dependency impact should find both:
-- `src/histogram.js`
-- `src/pill.js`
+The tag dependency expansion should show the histogram and probability-pill
+tasks are linked by `count-or-probability-coloring`. The ast-grep dependency
+expansion should find both `src/histogram.ts` and `src/pill.ts`, and it should
+not match `src/readerHover.ts`.
 
-Do not change the fixture in this step. Write the selected tags, rejected tag,
-new-tag decision, ast-grep command, and dependency-impact conclusion to
-`/tmp/agent-gest-git-tutorial/logs/05-tag-ast-grep.log`.
+Write the selected tags, rejected tag, new-tag decision, tag-linked work,
+ast-grep command, matched files, non-matched reader file, and dependency-impact
+conclusion to `/tmp/agent-gest-git-tutorial/logs/05-tag-ast-grep.log`.
 ```
 
 After the agent finishes, check:
 
 ```bash
-rg "count-or-probability-coloring|histogram.js|pill.js|reader-ui" \
+rg "tag dependency expansion|ast-grep dependency expansion|count-or-probability-coloring|src/histogram.ts|src/pill.ts|src/readerHover.ts|reader-ui" \
   /tmp/agent-gest-git-tutorial/logs/05-tag-ast-grep.log
 ```
 
 Expected:
 
 ```text
+tag dependency expansion
+ast-grep dependency expansion
 count-or-probability-coloring
-histogram.js
-pill.js
+src/histogram.ts
+src/pill.ts
+src/readerHover.ts
 reader-ui
 ```
 
@@ -501,13 +534,13 @@ same semantic dependency before completion.
 Commands it should have used:
 
 - `gest task list --all --json`, `gest artifact list --all --json`, and
-  `gest iteration list --all --json` in a real Gest project, or the seeded
-  `existing-tags.txt` vocabulary in this deterministic tutorial fixture
-- `ast-grep run --lang javascript --pattern 'countOrProbabilityColorScale($$$)'`
+  `gest iteration list --all --json` before choosing tags
+- `npm install` and `npm exec -- tsc --noEmit`
+- `ast-grep run --lang typescript --pattern 'countOrProbabilityColorScale($$$)'`
 
 Commands it should not have used:
 
-- invented "existing" tags without first collecting or seeding a tag vocabulary
+- invented "existing" tags without first collecting a Gest tag vocabulary
 - raw string-only dependency search as the primary check when `ast-grep` is
   available for the language
 
@@ -646,6 +679,8 @@ The scripts in this repo are regression checks, not the beginner tutorial:
 
 ```bash
 just workflow-lab
+just tag-dependency-live-lab
+just language-profile-labs
 just integration-live
 ```
 
