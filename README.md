@@ -24,6 +24,8 @@ version-controlled without making every project reinvent the same `gtw`, `gim`,
 - `scripts/run_gitbutler_github_integration_lab.sh`: live GitHub lab for the
   same four flows against temporary repos with cleanup.
 - `scripts/run_tag_dependency_agent_dry_run.sh`: local dry run for tag classification plus `ast-grep` dependency expansion.
+- `scripts/run_language_profile_labs.sh`: live local end-to-end setup labs for
+  the Python/UV, TypeScript/NPM, Go, and Rust/Cargo profiles.
 - `templates/`: composable setup snippets for `.gitignore`, `.envrc`,
   `.env.example`, and common `Justfile` targets.
 

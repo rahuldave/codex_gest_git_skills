@@ -11,7 +11,8 @@ Use the rest only when you need reference material:
 - `tag_dependency_workflow.md`: tag classification and ast-grep dependency checks.
 - `just_command_contract.md`: stable Justfile command contract guidance.
 - `gsu_typescript_hello_world.md`: tiny setup example.
-- `gsu_language_profile_labs.md`: setup examples for Python, TypeScript, Go, and Rust.
+- `gsu_language_profile_labs.md`: live local end-to-end setup labs for Python,
+  TypeScript, Go, and Rust.
 - `live_gitbutler_tutorial_transcript_2026-05-07.md`: historical live GitHub
   transcript for the four Git/GitButler tutorial examples.
 

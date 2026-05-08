@@ -9,9 +9,13 @@ static: lint
 test:
   scripts/run_gitbutler_workflow_lab.sh
   scripts/run_tag_dependency_agent_dry_run.sh
+  scripts/run_language_profile_labs.sh
 
 tag-dependency-dry-run:
   scripts/run_tag_dependency_agent_dry_run.sh
+
+language-profile-labs:
+  scripts/run_language_profile_labs.sh
 
 workflow-lab:
   scripts/run_gitbutler_workflow_lab.sh

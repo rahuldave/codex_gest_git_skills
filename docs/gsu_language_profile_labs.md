@@ -4,6 +4,18 @@ These disposable labs verify that `gsu` can compose setup snippets for multiple
 project types. They are examples, not golden project generators. Use them to
 test the workflow in a new chat or clean project, then delete the lab folders.
 
+The checked-in live local end-to-end harness is:
+
+```bash
+just language-profile-labs
+```
+
+That command creates four disposable repositories for Python/UV, TypeScript/NPM,
+Go, and Rust/Cargo; initializes Git and local Gest in each one; composes the
+profile `.gitignore`, `.envrc`, and `Justfile` snippets; and runs the setup and
+verification commands. It does not create GitHub remotes or pull requests,
+because these are language setup profiles rather than PR-flow tutorials.
+
 Each lab should prove:
 
 - Git initialization.
@@ -21,6 +33,7 @@ Profile snippets:
 - `templates/gitignore/python-uv.gitignore`
 - `templates/env/env.example`
 - `templates/env/envrc.local-bin`
+- `templates/env/python-uv.envrc`
 - `templates/just/python-uv.just`
 
 Important local state:
@@ -79,6 +92,7 @@ Profile snippets:
 
 - `templates/gitignore/base.gitignore`
 - `templates/gitignore/typescript-npm.gitignore`
+- `templates/env/typescript-npm.envrc`
 - `templates/just/npm-local-cache.just`
 - `templates/just/typescript-npm.just`
 
@@ -140,6 +154,7 @@ Profile snippets:
 
 - `templates/gitignore/base.gitignore`
 - `templates/gitignore/go.gitignore`
+- `templates/env/go.envrc`
 - `templates/just/go.just`
 
 Important local state:
@@ -196,6 +211,7 @@ Profile snippets:
 
 - `templates/gitignore/base.gitignore`
 - `templates/gitignore/rust-cargo.gitignore`
+- `templates/env/rust-cargo.envrc`
 - `templates/rust/rust-toolchain.toml`
 - `templates/just/rust-cargo.just`
 

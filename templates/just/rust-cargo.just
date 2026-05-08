@@ -16,7 +16,10 @@ test target="":
 docs:
   cargo doc --no-deps
 
+smoke:
+  cargo run --quiet
+
 diff-check:
   git diff --check
 
-verify: fmt lint typecheck build test diff-check
+verify: fmt lint typecheck build test smoke diff-check

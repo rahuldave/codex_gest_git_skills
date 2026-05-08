@@ -16,7 +16,11 @@ test target="":
   npm exec -- tsc
   node --test dist/*.test.js {{target}}
 
+smoke:
+  npm exec -- tsc
+  node dist/index.js
+
 diff-check:
   git diff --check
 
-verify: lint typecheck build test diff-check
+verify: lint typecheck build test smoke diff-check
