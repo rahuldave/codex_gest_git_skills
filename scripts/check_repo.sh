@@ -23,6 +23,7 @@ required_files=(
   "scripts/run_gitbutler_workflow_lab.sh"
   "scripts/run_gitbutler_github_integration_lab.sh"
   "scripts/run_tag_dependency_agent_dry_run.sh"
+  "scripts/run_language_profile_labs.sh"
   "templates/README.md"
   "tools/gest_mermaid_graph.py"
 )
@@ -66,6 +67,9 @@ required_text=(
   "but pr new tutorial/stack-child --default --json"
   "gh repo delete --yes"
   "Merge The Tutorial PRs"
+  "PR acceptance checkpoint"
+  "gh pr diff <number> --patch"
+  "gh pr checks <number>"
   "gh pr merge <number> --merge --delete-branch"
   "state MERGED"
   "existing-tags.txt"
@@ -83,6 +87,12 @@ required_text=(
   "GEST_VCS_EXECUTION=git-worktrees"
   "run_gitbutler_workflow_lab.sh"
   "run_gitbutler_github_integration_lab.sh"
+  "run_language_profile_labs.sh"
+  "language-profile-labs"
+  "live local end-to-end"
+  "Python With UV"
+  "TypeScript With NPM"
+  "Rust With Cargo"
 )
 
 for needle in "${required_text[@]}"; do
