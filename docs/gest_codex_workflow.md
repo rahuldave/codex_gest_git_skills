@@ -329,10 +329,11 @@ GitHub issue and the commit semantically closes or references it.
 Every Codex-created commit needs a separate push/sync decision. Do not treat
 GitHub issue promotion as a substitute for `git push`. Before and after the
 commit, inspect `git status --short --branch`; if the branch has an upstream
-and the user has not asked for local-only work, push the verified checkpoint or
-record the exact no-push reason in the task note/final summary. If the branch
-is still `ahead` at handoff, the checkpoint is incomplete unless that no-push
-reason is explicit.
+and the user has not asked for local-only work, push the verified checkpoint.
+If the branch has no upstream, set one with `git push -u origin <branch>` or
+the repo's equivalent; "no upstream" is not a no-push reason. If the branch is
+still local or `ahead` at handoff, the checkpoint is incomplete unless a real
+push blocker is explicit in the task note/final summary.
 
 When Codex pushes changes to a branch other than the repository's mainline
 branch, that push must be followed by a pull-request checkpoint: create or
@@ -342,6 +343,10 @@ second question when the user explicitly asked for the merge in the current
 turn. For reusable workflow/template repo changes, push and PR creation are
 required unless blocked; record the exact blocker instead of leaving the branch
 only pushed.
+
+After a PR is merged, inspect the repository's project instructions and command
+contract for deploy/release expectations. If the repo defines a deploy command
+for that kind of change, run it or record the exact blocker before handoff.
 
 Before final response for substantial work, run a dirty-worktree gate for each
 edited repo. A completed Gest task is not a substitute for a Git checkpoint. If
