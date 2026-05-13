@@ -37,8 +37,16 @@ gest search "Follow-up <module/feature>" --all --json --limit 20
 ```
 
 Report findings first, ordered by severity, with file/line references. Focus on
-bugs, behavioral regressions, safety, error handling, and missing tests. If no
-issues are found, say so and mention residual risk or test gaps.
+bugs, behavioral regressions, safety, error handling, and missing tests. Treat
+`Findings: None` as a precise statement about blocking or actionable code-review
+findings, not as the whole review.
+
+After findings, add reviewer judgment when it would help the user: call out
+non-blocking opinions about clarity, maintainability, UX, naming, fit with local
+patterns, or tradeoffs. Label these separately from findings so taste-level
+feedback does not look like a merge blocker. If no issues are found, say so,
+then still mention residual risk, test gaps, and any useful non-blocking
+observations.
 
 Missing focused tests for changed callable code or APIs are review findings, not
 just nice-to-have follow-ups.
