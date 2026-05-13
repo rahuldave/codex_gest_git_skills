@@ -97,7 +97,14 @@ workflow safety:
 - GitButler violations such as raw git writes in GitButler mode or shared
   GitButler workspace parallelism
 
-If there are no findings, say so clearly and list residual risk.
+Treat `Findings: None` as a precise statement about blocking or actionable
+code-review findings, not as the whole PR review. If there are no findings, say
+so clearly and list residual risk.
+
+After findings, add reviewer judgment when it would help the user: call out
+non-blocking opinions about clarity, maintainability, UX, naming, fit with local
+patterns, PR shape, or tradeoffs. Label these separately from findings so
+taste-level feedback does not look like a merge blocker.
 
 ## Acceptance Packet
 
@@ -108,6 +115,9 @@ Present a compact packet before any approval or merge:
 
 Findings:
 - None / <findings ordered by severity>
+
+Reviewer Notes:
+- <non-blocking opinions, maintainability/UX/readability judgment, or None>
 
 PR State:
 - PR: <url>
