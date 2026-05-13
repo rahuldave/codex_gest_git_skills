@@ -117,6 +117,10 @@ run `gpa`, report the PR review findings/state to the user, and ask whether to
 merge. Do not merge without explicit user approval unless the user already asked
 for that merge in the current turn.
 
+If a committed branch has no upstream, push with an upstream instead of stopping
+locally. After a PR is merged, run any deploy/release command defined by the
+target repository's instructions, or report the exact blocker.
+
 ## Branch, Stack, And Worktree Policy
 
 For Gest-tracked writes, keep `main` integration-ready and choose both a branch

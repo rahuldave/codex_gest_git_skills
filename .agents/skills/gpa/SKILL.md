@@ -18,6 +18,11 @@ this skill, report the review packet to the user, and ask whether to merge.
 Only merge without another question when the user explicitly asked for that
 merge in the current turn.
 
+After a PR is merged, inspect the repository instructions and command contract
+for required deployment or release work. Run the applicable deploy/release step
+or report the concrete blocker; a merge alone is not a completed handoff when
+the project expects deployment.
+
 ## Inputs
 
 Accept a PR number, URL, or current branch PR. If no PR is provided, discover it:

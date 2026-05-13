@@ -124,10 +124,12 @@ narrow enough that a future `git bisect` lands on a useful layer, not an entire
 multi-layer feature. Never include Gest IDs in commit messages.
 
 After every Codex-created commit, make the push/sync decision explicit. Run
-`git status --short --branch`; if the branch has an upstream and the user has
-not asked for local-only work, push the checkpoint or record the exact reason it
-was not pushed. Do not confuse GitHub issue promotion with `git push`. A
-checkpoint is not complete if the branch is silently `ahead` of its upstream.
+`git status --short --branch`; if the user has not asked for local-only work,
+push the checkpoint. If the branch has no upstream, set one with
+`git push -u origin <branch>` or the repo's equivalent; "no upstream" is not a
+reason to stop locally. Do not confuse GitHub issue promotion with `git push`.
+A checkpoint is not complete if the branch is silently local or `ahead` of its
+upstream.
 When Codex pushes changes to a branch other than the repository's mainline
 branch, it must create or update the pull request for that branch, run `gpa` on
 the PR, report the PR review findings/state to the user, and ask whether to
@@ -135,6 +137,10 @@ merge. Do not merge unless the user explicitly asked for that merge in the
 current turn or gives approval after the `gpa` review packet. For reusable
 workflow/template repo changes, push and PR creation are mandatory unless
 blocked; record the exact blocker instead of silently stopping at push.
+
+After merging a PR, check the repository instructions and command contract for
+deployment or release steps. If the project defines a deploy/release command
+for the merged change, run it or record the exact blocker before handoff.
 
 At every durable checkpoint, run checkpoint hygiene. Durable checkpoints include
 any Codex-created Git commit, closing a depth-1 task/product parent, completing

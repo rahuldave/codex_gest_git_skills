@@ -242,15 +242,21 @@ depth-1 workstream or coherent depth-2 subtree, before switching product areas,
 before handoff, after risky bug/migration work, or before GitHub issue/PR sync.
 Use `gcm`, stage explicit files, and never put Gest IDs in commit messages.
 When Codex creates a commit, make a separate push/sync decision: verify
-`git status --short --branch`, push if an upstream exists and local-only work
-was not requested, or record the exact no-push reason. GitHub issue promotion
-and `git push` are different decisions.
+`git status --short --branch`, then push unless local-only work was explicitly
+requested or the push is blocked. If the branch has no upstream, set one with
+the normal repository command such as `git push -u origin <branch>`; "no
+upstream" is not a no-push reason. GitHub issue promotion and `git push` are
+different decisions.
 
 When Codex pushes changes to a branch other than the repository's mainline
 branch, do not stop at push. Create or update the PR for that branch, route the
 PR through `gpa`, report the PR review findings/state to the user, and ask
 whether to merge. Only merge without another question when the user explicitly
 asked for the merge in the current turn.
+
+After a PR is merged, check the repository's project instructions and command
+contract for deployment or release steps. If the repo defines a deploy command
+for this kind of change, run it or record the concrete blocker before handoff.
 
 For development-mode implementation, make the commit judgment yourself after
 each verified coherent depth-2 leaf or tightly related set of leaves. Prefer a
@@ -274,9 +280,13 @@ At every durable checkpoint, run the cleanup that future agents need:
   `github.issue`/`github.url`, or record why it was not promoted
 - verify push state for each Codex-created commit; do not finish a checkpoint
   with an unmentioned `ahead` branch
+- if a committed branch has no upstream, push with an upstream instead of
+  treating that state as local-only
 - after pushing a non-mainline branch, create/update the PR, run `gpa`, report
   the PR review, and ask before merge unless the user already explicitly asked
   for that merge
+- after merging a PR, run the repo's deploy/release contract when applicable,
+  or report the exact reason deployment was skipped
 - run `grv` after every code change before task completion, even for quick
   development without a pull request
 - report graph paths, commit hashes, push status, review status, and GitHub
